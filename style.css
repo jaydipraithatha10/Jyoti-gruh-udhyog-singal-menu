@@ -169,3 +169,130 @@ body{
     font-size:13px;
     font-weight:700;
 }
+
+/* ===========================
+   PRODUCT CARD
+=========================== */
+
+.product-row{
+    background:#fff;
+    border-radius:20px;
+    padding:20px 18px;
+    margin:15px 0;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    transition:.25s ease;
+    border:1px solid #efe5d8;
+}
+
+.product-row:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 24px rgba(0,0,0,.12);
+}
+
+.product-name{
+    font-size:20px;
+    font-weight:700;
+    color:#4b2e1f;
+    line-height:1.4;
+    margin-bottom:10px;
+}
+
+.product-info{
+    display:inline-block;
+    padding:7px 16px;
+    border-radius:30px;
+    background:#f7f1e8;
+    color:#6b3f20;
+    font-size:15px;
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+/* ===========================
+   QUANTITY
+=========================== */
+
+.qty-box{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:22px;
+}
+
+.qty-btn{
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:50%;
+    background:#6b3f20;
+    color:#fff;
+    font-size:24px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.qty-btn:hover{
+    background:#8b5a2b;
+}
+
+.qty-btn:active{
+    transform:scale(.92);
+}
+
+.qty{
+    width:42px;
+    text-align:center;
+    font-size:22px;
+    font-weight:700;
+    color:#6b3f20;
+}
+
+/* ===========================
+   CART
+=========================== */
+
+.cart-bar{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    background:#ffffff;
+    padding:14px 16px;
+    display:none;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 -8px 20px rgba(0,0,0,.12);
+    border-top:1px solid #ececec;
+    z-index:999;
+}
+
+.cart-details strong{
+    color:#4b2e1f;
+    font-size:16px;
+}
+
+#cartTotal{
+    margin-top:5px;
+    color:#6b3f20;
+    font-size:22px;
+    font-weight:700;
+}
+
+#orderBtn{
+    border:none;
+    background:#25D366;
+    color:#fff;
+    padding:14px 22px;
+    border-radius:50px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.25s;
+    box-shadow:0 6px 16px rgba(37,211,102,.30);
+}
+
+#orderBtn:hover{
+    transform:translateY(-2px);
+}

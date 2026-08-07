@@ -160,7 +160,10 @@ const products = category.products.filter(product =>
             `;
 
         });
+         
 
+        
+html += "</div>";
         section.innerHTML = html;
 
         menuContainer.appendChild(section);

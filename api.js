@@ -298,3 +298,114 @@ searchInput.addEventListener("input", function(){
     renderMenu(this.value);
 
 });
+
+/* ===========================
+   CHANGE QUANTITY
+=========================== */
+
+function changeQty(categoryName, productName, change){
+
+    const category = menu.find(c => c.category === categoryName);
+
+    if(!category) return;
+
+    const product = category.products.find(
+        p => p.name === productName
+    );
+
+    if(!product) return;
+
+    product.qty += change;
+
+    if(product.qty < 0){
+
+        product.qty = 0;
+
+    }
+
+    localStorage.setItem(
+        "jyotiProducts",
+        JSON.stringify(menu)
+    );
+
+    updateCart();
+
+    renderMenu(searchInput.value);
+
+}
+
+/* ===========================
+   UPDATE CART
+=========================== */
+
+function updateCart(){
+
+    let items = 0;
+
+    let total = 0;
+
+    menu.forEach(category=>{
+
+        category.products.forEach(product=>{
+
+            if(product.qty > 0){
+
+                items += product.qty;
+
+                total +=
+                    product.qty * product.price;
+
+            }
+
+        });
+
+    });
+
+    cartItems.innerText = items;
+
+    cartTotal.innerText = "₹" + total;
+
+    cartBar.style.display =
+        items > 0 ? "flex" : "none";
+
+}
+
+/* ===========================
+   CATEGORY COLLAPSE
+=========================== */
+
+function toggleCategory(category){
+
+    const box =
+        document.getElementById(
+            "cat-" + category
+        );
+
+    const icon =
+        document.getElementById(
+            "icon-" + category
+        );
+
+    if(!box) return;
+
+    if(box.style.display==="none"){
+
+        box.style.display="block";
+
+        icon.innerHTML="▼";
+
+    }else{
+
+        box.style.display="none";
+
+        icon.innerHTML="▶";
+
+    }
+
+}
+
+/* ===========================
+   INITIAL CART
+=========================== */
+
+updateCart();

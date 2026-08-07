@@ -196,3 +196,156 @@ body{
     font-size:13px;
     font-weight:700;
 }
+
+/* ===========================
+   PRODUCT CARD
+=========================== */
+
+.product-row{
+    background:#fff;
+    border-radius:18px;
+    margin:16px 0;
+    padding:20px 18px;
+    text-align:center;
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+    border:1px solid #efe6da;
+    transition:.25s;
+}
+
+.product-row:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 24px rgba(0,0,0,.12);
+}
+
+.product-name{
+    font-size:20px;
+    font-weight:700;
+    color:#4b2e1f;
+    line-height:1.5;
+}
+
+.product-info{
+    display:inline-block;
+    margin-top:12px;
+    margin-bottom:18px;
+    padding:8px 18px;
+    border-radius:30px;
+    background:#f6efe4;
+    color:#6b3f20;
+    font-size:15px;
+    font-weight:600;
+}
+
+/* ===========================
+   QUANTITY
+=========================== */
+
+.qty-box{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:18px;
+}
+
+.qty-btn{
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:50%;
+    background:#6b3f20;
+    color:#fff;
+    font-size:24px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.qty-btn:hover{
+    background:#8b5a2b;
+    transform:scale(1.08);
+}
+
+.qty-btn:active{
+    transform:scale(.92);
+}
+
+.qty{
+    min-width:40px;
+    text-align:center;
+    font-size:22px;
+    font-weight:700;
+    color:#6b3f20;
+}
+
+/* ===========================
+   STICKY CART
+=========================== */
+
+.cart-bar{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    display:none;
+    justify-content:space-between;
+    align-items:center;
+    background:#fff;
+    padding:14px 18px;
+    border-top:1px solid #ececec;
+    box-shadow:0 -8px 20px rgba(0,0,0,.12);
+    z-index:999;
+}
+
+.cart-details strong{
+    color:#4b2e1f;
+    font-size:16px;
+}
+
+#cartTotal{
+    margin-top:4px;
+    color:#6b3f20;
+    font-size:22px;
+    font-weight:700;
+}
+
+#orderBtn{
+    border:none;
+    background:#25D366;
+    color:#fff;
+    padding:14px 22px;
+    border-radius:40px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.25s;
+    box-shadow:0 6px 15px rgba(37,211,102,.35);
+}
+
+#orderBtn:hover{
+    transform:translateY(-2px);
+}
+
+/* ===========================
+   VOICE BUTTON ACTIVE
+=========================== */
+
+.voice-btn.listening{
+    background:#d32f2f;
+    animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.12);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+
+}

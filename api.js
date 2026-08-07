@@ -157,7 +157,7 @@ const products = category.products.filter(product =>
     });
 
     
-}
+
 
     document.getElementById("productCount").innerText = totalProducts;
 

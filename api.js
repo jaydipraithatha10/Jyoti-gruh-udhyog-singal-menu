@@ -66,6 +66,11 @@ if(savedData){
 
 document.getElementById("loader").style.display = "none";
 
+localStorage.setItem(
+    "jyotiProducts",
+    JSON.stringify(menu)
+);
+
     renderMenu();
 
 }

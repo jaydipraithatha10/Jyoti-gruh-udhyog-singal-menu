@@ -489,12 +489,9 @@ document.getElementById("orderBtn").addEventListener("click",function(){
     }
 
     window.open(
-
-        "https://wa.me/919712149344?text=" + message,
-
-        "_blank"
-
-    );
+    "https://wa.me/919712149344?text=" + encodeURIComponent(message),
+    "_blank"
+);
 
     /* Clear Cart */
 

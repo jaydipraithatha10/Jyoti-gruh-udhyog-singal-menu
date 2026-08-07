@@ -102,11 +102,13 @@ body{
 .category-title{
     background:#6b3f20;
     color:#fff;
-    padding:14px;
+    padding:14px 18px;
     border-radius:12px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    cursor:pointer;
+    user-select:none;
 }
 
 .category-count{

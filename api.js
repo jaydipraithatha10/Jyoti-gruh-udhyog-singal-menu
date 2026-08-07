@@ -1,14 +1,71 @@
 
 const menu = [
-  {
-    category: "KHAKHRA",
+{
+    category: "HAND MADE KHAKHRA",
     products: [
-      "Naylon Sada Khakhra",
-      "Naylon Jeera Khakhra",
-      "Naylon Methi Khakhra",
-      "Naylon Masala Khakhra"
+
+        {
+            name: "Naylon Sada Khakhra",
+            weight: "500 gm",
+            price: "₹160"
+        },
+
+        {
+            name: "Naylon Jeera Khakhra",
+            weight: "500 gm",
+            price: "₹160"
+        },
+
+        {
+            name: "Naylon Methi Khakhra",
+            weight: "500 gm",
+            price: "₹160"
+        },
+
+        {
+            name: "Naylon Masala Khakhra",
+            weight: "500 gm",
+            price: "₹160"
+        },
+
+        {
+            name: "Kothmir Marcha Khakhra",
+            weight: "500 gm",
+            price: "₹180"
+        },
+
+        {
+            name: "Lasen Mirchi Khakhra",
+            weight: "500 gm",
+            price: "₹180"
+        },
+
+        {
+            name: "Mangroli Khakhra",
+            weight: "500 gm",
+            price: "₹180"
+        },
+
+        {
+            name: "Bajri Methi Khakhra",
+            weight: "500 gm",
+            price: "₹180"
+        },
+
+        {
+            name: "Ragi Khakhra",
+            weight: "500 gm",
+            price: "₹180"
+        },
+
+        {
+            name: "Juwar Khakhra",
+            weight: "500 gm",
+            price: "₹180"
+        }
+
     ]
-  }
+}
 ];
 
 const menuContainer = document.getElementById("menuContainer");

@@ -515,3 +515,167 @@ ${review}
     );
 
 }
+
+/* ===========================
+   VOICE ORDER
+=========================== */
+
+if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "gu-IN";
+
+    recognition.interimResults = false;
+
+    recognition.continuous = false;
+
+    recognition.maxAlternatives = 1;
+
+    voiceBtn.addEventListener("click", () => {
+
+        recognition.start();
+
+        voiceBtn.classList.add("listening");
+
+        voiceResult.innerHTML = "🎤 સાંભળી રહ્યું છે...";
+
+    });
+
+    recognition.onresult = function (event) {
+
+        const text =
+            event.results[0][0].transcript;
+
+        voiceResult.innerHTML =
+            "🎤 " + text;
+
+        processVoiceOrder(text);
+
+    };
+
+    recognition.onend = function () {
+
+        voiceBtn.classList.remove("listening");
+
+    };
+
+}
+
+/* ===========================
+   PROCESS VOICE
+=========================== */
+
+function processVoiceOrder(text){
+
+    text = text.toLowerCase();
+
+    alert("તમે કહ્યું : " + text);
+
+    // Version 6.1 માં અહીં
+    // Product Auto Match આવશે.
+
+}
+
+/* ===========================
+   WHATSAPP ORDER
+=========================== */
+
+document
+.getElementById("orderBtn")
+.addEventListener("click",function(){
+
+    let total = 0;
+
+    let message =
+"🛒 *Jyoti Gruh Udhyog*\n\n";
+
+    menu.forEach(category=>{
+
+        let found = false;
+
+        category.products.forEach(product=>{
+
+            if(product.qty>0){
+
+                if(!found){
+
+                    message +=
+"\n📦 *" +
+category.category +
+"*\n";
+
+                    found = true;
+
+                }
+
+                const amount =
+                product.qty *
+                product.price;
+
+                total += amount;
+
+                message +=
+"• " +
+product.name +
+"\n" +
+product.weight +
+" × " +
+product.qty +
+" = ₹" +
+amount +
+"\n";
+
+            }
+
+        });
+
+    });
+
+    if(total===0){
+
+        alert(
+"Please add product."
+);
+
+        return;
+
+    }
+
+    message +=
+"\n━━━━━━━━━━━━━━\n";
+
+    message +=
+"💰 Total : ₹" +
+total;
+
+    window.open(
+
+"https://wa.me/919712149344?text="+
+encodeURIComponent(message),
+
+"_blank"
+
+);
+
+    /* CLEAR CART */
+
+    menu.forEach(category=>{
+
+        category.products.forEach(product=>{
+
+            product.qty = 0;
+
+        });
+
+    });
+
+    updateCart();
+
+    renderMenu();
+
+});

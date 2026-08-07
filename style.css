@@ -1,8 +1,9 @@
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+    font-family:'Outfit',sans-serif;
 }
 
 body{
@@ -122,21 +123,24 @@ body{
 .product-row{
     background:#fff;
     border-radius:18px;
-    padding:18px;
+    padding:22px;
     margin-top:15px;
     box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+    text-align:center;
 }
 
 .product-name{
-    font-size:18px;
+    font-size:20px;
     font-weight:700;
     color:#4b2e1f;
+    margin-bottom:8px;
 }
 
 .product-info{
-    margin-top:8px;
-    color:#777;
     font-size:15px;
+    color:#777;
+    margin-bottom:18px;
 }
 
 /* Quantity Box */
@@ -148,6 +152,8 @@ body{
     gap:18px;
     margin-top:18px;
 }
+
+
 
 .qty-btn{
     width:38px;

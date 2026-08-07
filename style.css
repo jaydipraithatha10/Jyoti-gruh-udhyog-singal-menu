@@ -197,9 +197,9 @@ footer{
 
 .product-row{
     display:grid;
-    grid-template-columns:1fr 70px 60px;
+    grid-template-columns:2fr 80px 70px;
     align-items:center;
-    gap:10px;
+    gap:12px;
     padding:14px 0;
     border-bottom:1px solid #e7d9c7;
 }
@@ -216,7 +216,10 @@ footer{
 }
 
 .product-price{
-    text-align:right;
+    background:#7a4a25;
+    color:#fff;
+    padding:4px 10px;
+    border-radius:20px;
+    text-align:center;
     font-weight:700;
-    color:#7a4a25;
 }

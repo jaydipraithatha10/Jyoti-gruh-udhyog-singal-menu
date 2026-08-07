@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#5A3A22">
+    <meta name="theme-color" content="#6b3f20">
 
     <title>Jyoti Gruh Udhyog | Product Menu</title>
 
@@ -13,7 +13,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
@@ -45,24 +47,51 @@
     </div>
 
 </header>
-<h2 class="product-heading">
-    PRODUCT LIST (<span id="productCount">0</span>)
-</h2>
 
-<section class="search-section">
+<section class="menu-header">
 
-    <input
-        type="text"
-        id="searchInput"
-        placeholder="Search Products...">
+    <h2 class="product-heading">
+        PRODUCT LIST (<span id="productCount">0</span>)
+    </h2>
+
+    <div class="search-section">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Search Products...">
+
+    </div>
 
 </section>
 
 <main id="menuContainer">
 
-    <!-- Product Categories from api.js -->
-
 </main>
+
+<!-- Sticky Cart -->
+
+<div id="cartBar" class="cart-bar">
+
+    <div>
+
+        <strong>
+            🛒 Cart (<span id="cartItems">0</span>)
+        </strong>
+
+        <br>
+
+        <span id="cartTotal">
+            ₹0
+        </span>
+
+    </div>
+
+    <button id="orderBtn">
+        Order on WhatsApp
+    </button>
+
+</div>
 
 <footer>
 
@@ -73,4 +102,5 @@
 <script src="api.js"></script>
 
 </body>
+
 </html>

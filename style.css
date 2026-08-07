@@ -120,28 +120,9 @@ body{
 
 /* Product Card */
 
-.product-row{
-    background:#fff;
-    border-radius:18px;
-    padding:22px;
-    margin-top:15px;
-    box-shadow:0 4px 12px rgba(0,0,0,.08);
 
-    text-align:center;
-}
 
-.product-name{
-    font-size:20px;
-    font-weight:700;
-    color:#4b2e1f;
-    margin-bottom:8px;
-}
 
-.product-info{
-    font-size:15px;
-    color:#777;
-    margin-bottom:18px;
-}
 
 /* Quantity Box */
 
@@ -166,6 +147,7 @@ body{
     font-weight:bold;
     cursor:pointer;
     transition:.3s;
+    justify-content:center;
 }
 
 .qty-btn:hover{

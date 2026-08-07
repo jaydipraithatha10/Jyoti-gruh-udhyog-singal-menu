@@ -1,81 +1,7 @@
-const menu = [
-{
-    category: "HAND MADE KHAKHRA",
-    products: [
+const SHEET_URL =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vStfoYZJzDES0lAav3gzVi4hHMrr-g-vu6oHbAecwVN7-j5ZfyZCE4wy5qE8oaH0fSw14Y97pHMmUrU/pub?gid=1327834650&single=true&output=csv";
 
-        {
-            name: "Naylon Sada Khakhra",
-            weight: "500 gm",
-            price: 160,
-            qty: 0
-        },
-
-        {
-            name: "Naylon Jeera Khakhra",
-            weight: "500 gm",
-            price: 160,
-            qty: 0
-        },
-
-        {
-            name: "Naylon Methi Khakhra",
-            weight: "500 gm",
-            price: 160,
-            qty: 0
-        },
-
-        {
-            name: "Naylon Masala Khakhra",
-            weight: "500 gm",
-            price: 160,
-            qty: 0
-        },
-
-        {
-            name: "Kothmir Marcha Khakhra",
-            weight: "500 gm",
-            price: 180,
-            qty: 0
-        },
-
-        {
-            name: "Lasen Mirchi Khakhra",
-            weight: "500 gm",
-            price: 180,
-            qty: 0
-        },
-
-        {
-            name: "Mangroli Khakhra",
-            weight: "500 gm",
-            price: 180,
-            qty: 0
-        },
-
-        {
-            name: "Bajri Methi Khakhra",
-            weight: "500 gm",
-            price: 180,
-            qty: 0
-        },
-
-        {
-            name: "Ragi Khakhra",
-            weight: "500 gm",
-            price: 180,
-            qty: 0
-        },
-
-        {
-            name: "Juwar Khakhra",
-            weight: "500 gm",
-            price: 180,
-            qty: 0
-        }
-
-    ]
-}
-];
+let menu = [];
 
 const menuContainer = document.getElementById("menuContainer");
 const searchInput = document.getElementById("searchInput");
@@ -83,169 +9,53 @@ const cartBar = document.getElementById("cartBar");
 const cartItems = document.getElementById("cartItems");
 const cartTotal = document.getElementById("cartTotal");
 
-function renderMenu(search = "") {
+async function loadProducts(){
 
-    menuContainer.innerHTML = "";
+    const response = await fetch(SHEET_URL);
 
-    let totalProducts = 0;
+    const csv = await response.text();
 
-    menu.forEach(category => {
+    const rows = csv.trim().split("\n");
 
-        const products = category.products.filter(product =>
-            product.name.toLowerCase().includes(search.toLowerCase())
-        );
+    rows.shift();
 
-        if(products.length === 0) return;
+    const categoryMap = {};
 
-        totalProducts += products.length;
+    rows.forEach(row=>{
 
-        const section = document.createElement("section");
-        section.className = "category";
+        const cols = row.split(",");
 
-        section.innerHTML = `
-            <h2 class="category-title">
-                ${category.category}
-                <span class="category-count">(${products.length})</span>
-            </h2>
+        const category = cols[1].trim();
+        const name = cols[2].trim();
+        const weight = cols[3].trim();
+        const price = Number(cols[4]);
+        const status = cols[5].trim();
 
-            ${products.map((product,index)=>`
+        if(status !== "Active") return;
 
-                <div class="product-row">
+        if(!categoryMap[category]){
+            categoryMap[category]=[];
+        }
 
-                    <div class="product-name">
-                        ${product.name}
-                    </div>
-
-                    <div class="product-info">
-                        ${product.weight} • ₹${product.price}
-                    </div>
-
-                    <div class="qty-box">
-
-                        <button
-                            class="qty-btn"
-                            onclick="changeQty('${category.category}',${index},-1)">
-                            −
-                        </button>
-
-                        <span class="qty">
-                            ${product.qty}
-                        </span>
-
-                        <button
-                            class="qty-btn"
-                            onclick="changeQty('${category.category}',${index},1)">
-                            +
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `).join("")}
-
-        `;
-
-        menuContainer.appendChild(section);
-
-    });
-
-    document.getElementById("productCount").innerText = totalProducts;
-
-}
-
-searchInput.addEventListener("input",function(){
-
-    renderMenu(this.value);
-
-});
-
-renderMenu();
-
-function changeQty(categoryName,index,change){
-
-    const category = menu.find(c => c.category === categoryName);
-
-    if(!category) return;
-
-    const product = category.products[index];
-
-    product.qty += change;
-
-    if(product.qty < 0){
-        product.qty = 0;
-    }
-
-    updateCart();
-
-    renderMenu(searchInput.value);
-
-}
-
-function updateCart(){
-
-    let items = 0;
-    let total = 0;
-
-    menu.forEach(category=>{
-
-        category.products.forEach(product=>{
-
-            items += product.qty;
-
-            total += product.qty * product.price;
-
+        categoryMap[category].push({
+            name,
+            weight,
+            price,
+            qty:0
         });
 
     });
 
-    cartItems.innerText = items;
-    cartTotal.innerText = "₹" + total;
+    menu = Object.keys(categoryMap).map(cat=>({
 
-    if(items>0){
-        cartBar.style.display="flex";
-    }else{
-        cartBar.style.display="none";
-    }
+        category:cat,
+
+        products:categoryMap[cat]
+
+    }));
+
+    renderMenu();
 
 }
 
-document.getElementById("orderBtn").addEventListener("click",function(){
-
-    let message="*Jyoti Gruh Udhyog Order*%0A%0A";
-
-    let total=0;
-
-    menu.forEach(category=>{
-
-        category.products.forEach(product=>{
-
-            if(product.qty>0){
-
-                message += "• " + product.name +
-                "%0A" +
-                product.weight +
-                " × " +
-                product.qty +
-                " = ₹" +
-                (product.qty*product.price) +
-                "%0A%0A";
-
-                total += product.qty*product.price;
-
-            }
-
-        });
-
-    });
-
-    message += "*Total : ₹"+total+"*";
-
-    window.open(
-        "https://wa.me/919712149344?text="+message,
-        "_blank"
-    );
-
-});
-
-updateCart();
+loadProducts();

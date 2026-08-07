@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="gu">
 
 <head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#6B3F20">
-    <meta name="description" content="Jyoti Gruh Udhyog - Premium Homemade Products">
+    <meta name="description" content="Jyoti Gruh Udhyog Product Menu">
 
-    <title>Jyoti Gruh Udhyog | Product Menu</title>
+    <title>Jyoti Gruh Udhyog</title>
 
     <link rel="icon" href="favicon.ico">
 
@@ -17,7 +17,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=6">
 
 </head>
 
@@ -25,7 +25,7 @@
 
 <header class="header">
 
-    <img src="logo.webp" alt="Jyoti Gruh Udhyog" class="logo">
+    <img src="logo.webp" class="logo" alt="Jyoti Gruh Udhyog">
 
     <h1>JYOTI GRUH UDHYOG</h1>
 
@@ -40,7 +40,7 @@
     <div class="contact">
 
         <a href="tel:+919712149344" class="call-btn">
-            📞 Call Now
+            📞 Call
         </a>
 
         <a href="https://wa.me/919712149344" class="whatsapp-btn" target="_blank">
@@ -58,12 +58,22 @@
         (<span id="productCount">0</span>)
     </h2>
 
-    <input
-        type="search"
-        id="searchInput"
-        placeholder="🔍 Search Products..."
-        autocomplete="off"
-        spellcheck="false">
+    <div class="search-box">
+
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="🔍 Search Products..."
+            autocomplete="off"
+            spellcheck="false">
+
+        <button id="voiceBtn" class="voice-btn" title="Voice Order">
+            🎤
+        </button>
+
+    </div>
+
+    <div id="voiceResult" class="voice-result"></div>
 
 </section>
 
@@ -79,33 +89,75 @@
 
 </main>
 
+<section class="review-section">
+
+    <h3>🌟 તમને અમારી પ્રોડક્ટ કેવી લાગી?</h3>
+
+    <div class="review-buttons">
+
+        <button class="review-btn excellent"
+            onclick="sendReview('ઉત્તમ')">
+
+            😊 ઉત્તમ
+
+        </button>
+
+        <button class="review-btn good"
+            onclick="sendReview('સારી')">
+
+            🙂 સારી
+
+        </button>
+
+        <button class="review-btn improve"
+            onclick="sendReview('સુધારાની જરૂર છે')">
+
+            🙏 સુધારાની જરૂર છે
+
+        </button>
+
+    </div>
+
+</section>
+
 <div id="cartBar" class="cart-bar">
 
     <div class="cart-details">
 
         <strong>
-            🛒 Cart (<span id="cartItems">0</span>)
+
+            🛒 Cart
+            (<span id="cartItems">0</span>)
+
         </strong>
 
         <div id="cartTotal">
+
             ₹0
+
         </div>
 
     </div>
 
     <button id="orderBtn">
+
         🟢 Order on WhatsApp
+
     </button>
 
 </div>
 
 <footer>
 
-    <p>© 2026 Jyoti Gruh Udhyog</p>
+    <p>
+
+        © 2026 Jyoti Gruh Udhyog
+
+    </p>
 
 </footer>
 
-<script src="api.js?v=4"></script>
+<script src="api.js?v=6"></script>
 
 </body>
 

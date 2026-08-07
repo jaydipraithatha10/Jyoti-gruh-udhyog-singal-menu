@@ -1,23 +1,44 @@
 /* ===========================
-   GOOGLE SHEET
+   JYOTI GRUH UDHYOG
+   API.JS V6 - PART 1
+=========================== */
+
+/* ===========================
+   GOOGLE SHEET URL
 =========================== */
 
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vStfoYZJzDES0lAav3gzVi4hHMrr-g-vu6oHbAecwVN7-j5ZfyZCE4wy5qE8oaH0fSw14Y97pHMmUrU/pub?gid=1327834650&single=true&output=csv";
 
 /* ===========================
-   GLOBALS
+   GLOBAL VARIABLES
 =========================== */
 
 let menu = [];
 
-const menuContainer = document.getElementById("menuContainer");
-const searchInput = document.getElementById("searchInput");
-const loader = document.getElementById("loader");
+const menuContainer =
+document.getElementById("menuContainer");
 
-const cartBar = document.getElementById("cartBar");
-const cartItems = document.getElementById("cartItems");
-const cartTotal = document.getElementById("cartTotal");
+const searchInput =
+document.getElementById("searchInput");
+
+const loader =
+document.getElementById("loader");
+
+const cartBar =
+document.getElementById("cartBar");
+
+const cartItems =
+document.getElementById("cartItems");
+
+const cartTotal =
+document.getElementById("cartTotal");
+
+const voiceBtn =
+document.getElementById("voiceBtn");
+
+const voiceResult =
+document.getElementById("voiceResult");
 
 /* ===========================
    LOAD PRODUCTS
@@ -25,29 +46,23 @@ const cartTotal = document.getElementById("cartTotal");
 
 async function loadProducts(){
 
-    // Load Cached Data
-
-    const cache = localStorage.getItem("jyotiProducts");
-
-    if(cache){
-
-        menu = JSON.parse(cache);
-
-        renderMenu();
-
-    }
-
     try{
 
-        const response = await fetch(SHEET_URL);
+        loader.style.display = "flex";
+
+        const response =
+        await fetch(SHEET_URL);
 
         if(!response.ok){
 
-            throw new Error("Sheet not loaded");
+            throw new Error(
+                "Google Sheet Error"
+            );
 
         }
 
-        const csv = await response.text();
+        const csv =
+        await response.text();
 
         buildMenu(csv);
 
@@ -57,28 +72,32 @@ async function loadProducts(){
 
         console.log(error);
 
-        if(menu.length===0){
+        menuContainer.innerHTML = `
 
-            menuContainer.innerHTML=`
-                <div class="no-products">
-                    ⚠️<br><br>
-                    Unable to load products.
-                </div>
-            `;
+            <div class="no-products">
 
-        }
+                ⚠️
+
+                <br><br>
+
+                Products Loading Failed
+
+            </div>
+
+        `;
 
     }
 
 }
 
 /* ===========================
-   CSV TO MENU
+   BUILD MENU
 =========================== */
 
 function buildMenu(csv){
 
-    const rows = csv.trim().split("\n");
+    const rows =
+    csv.trim().split("\n");
 
     rows.shift();
 
@@ -88,25 +107,38 @@ function buildMenu(csv){
 
         const cols = row.split(",");
 
-        if(cols.length<6) return;
+        if(cols.length < 6){
 
-        const category = cols[1].trim();
+            return;
+
+        }
+
+        const category =
+        cols[1].trim();
 
         const product = {
 
-            name:cols[2].trim(),
+            name:
+            cols[2].trim(),
 
-            weight:cols[3].trim(),
+            weight:
+            cols[3].trim(),
 
-            price:Number(cols[4]),
+            price:
+            Number(cols[4]),
 
-            status:cols[5].trim(),
+            status:
+            cols[5].trim(),
 
             qty:0
 
         };
 
-        if(product.status!=="Active") return;
+        if(product.status !== "Active"){
+
+            return;
+
+        }
 
         if(!categoryMap[category]){
 
@@ -122,399 +154,21 @@ function buildMenu(csv){
 
         category:cat,
 
-        products:categoryMap[cat]
+        products:
+        categoryMap[cat]
 
     }));
 
-    localStorage.setItem(
-
-        "jyotiProducts",
-
-        JSON.stringify(menu)
-
-    );
-
-    loader.style.display="none";
+    loader.style.display = "none";
 
     renderMenu();
 
+    updateCart();
+
 }
+
+/* ===========================
+   START
+=========================== */
 
 loadProducts();
-
-/* ===========================
-   RENDER MENU
-=========================== */
-
-function renderMenu(search = "") {
-
-    menuContainer.innerHTML = "";
-
-    let totalProducts = 0;
-
-    const keyword = search.trim().toLowerCase();
-
-    menu.forEach(category => {
-
-        const products = category.products.filter(product => {
-
-            return (
-                product.name.toLowerCase().includes(keyword) ||
-                category.category.toLowerCase().includes(keyword) ||
-                product.weight.toLowerCase().includes(keyword) ||
-                product.price.toString().includes(keyword)
-            );
-
-        });
-
-        if(products.length === 0) return;
-
-        totalProducts += products.length;
-
-        const section = document.createElement("section");
-
-        section.className = "category";
-
-        let html = `
-            <h2 class="category-title"
-                onclick="toggleCategory('${category.category}')">
-
-                <span>
-                    <span id="icon-${category.category}">
-                        ▼
-                    </span>
-
-                    ${category.category}
-                </span>
-
-                <span class="category-count">
-                    (${products.length})
-                </span>
-
-            </h2>
-
-            <div id="cat-${category.category}">
-        `;
-
-        products.forEach(product => {
-
-            html += `
-
-                <div class="product-row">
-
-                    <div class="product-name">
-
-                        ${product.name}
-
-                    </div>
-
-                    <div class="product-info">
-
-                        ${product.weight}
-                        &nbsp; • &nbsp;
-                        ₹${product.price}
-
-                    </div>
-
-                    <div class="qty-box">
-
-                        <button
-                            class="qty-btn"
-
-                            onclick="changeQty(
-                                '${category.category}',
-                                '${product.name}',
-                                -1
-                            )">
-
-                            −
-
-                        </button>
-
-                        <span class="qty">
-
-                            ${product.qty}
-
-                        </span>
-
-                        <button
-                            class="qty-btn"
-
-                            onclick="changeQty(
-                                '${category.category}',
-                                '${product.name}',
-                                1
-                            )">
-
-                            +
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        });
-
-        html += `</div>`;
-
-        section.innerHTML = html;
-
-        menuContainer.appendChild(section);
-
-    });
-
-    document.getElementById("productCount").innerText =
-        totalProducts;
-
-    if(totalProducts === 0){
-
-        menuContainer.innerHTML = `
-
-            <div class="no-products">
-
-                🔍
-
-                <br><br>
-
-                No Products Found
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-/* ===========================
-   SEARCH
-=========================== */
-
-searchInput.addEventListener("input", function(){
-
-    renderMenu(this.value);
-
-});
-
-/* ===========================
-   CHANGE QUANTITY
-=========================== */
-
-function changeQty(categoryName, productName, change){
-
-    const category = menu.find(c => c.category === categoryName);
-
-    if(!category) return;
-
-    const product = category.products.find(
-        p => p.name === productName
-    );
-
-    if(!product) return;
-
-    product.qty += change;
-
-    if(product.qty < 0){
-
-        product.qty = 0;
-
-    }
-
-    localStorage.setItem(
-        "jyotiProducts",
-        JSON.stringify(menu)
-    );
-
-    updateCart();
-
-    renderMenu(searchInput.value);
-
-}
-
-/* ===========================
-   UPDATE CART
-=========================== */
-
-function updateCart(){
-
-    let items = 0;
-
-    let total = 0;
-
-    menu.forEach(category=>{
-
-        category.products.forEach(product=>{
-
-            if(product.qty > 0){
-
-                items += product.qty;
-
-                total +=
-                    product.qty * product.price;
-
-            }
-
-        });
-
-    });
-
-    cartItems.innerText = items;
-
-    cartTotal.innerText = "₹" + total;
-
-    cartBar.style.display =
-        items > 0 ? "flex" : "none";
-
-}
-
-/* ===========================
-   CATEGORY COLLAPSE
-=========================== */
-
-function toggleCategory(category){
-
-    const box =
-        document.getElementById(
-            "cat-" + category
-        );
-
-    const icon =
-        document.getElementById(
-            "icon-" + category
-        );
-
-    if(!box) return;
-
-    if(box.style.display==="none"){
-
-        box.style.display="block";
-
-        icon.innerHTML="▼";
-
-    }else{
-
-        box.style.display="none";
-
-        icon.innerHTML="▶";
-
-    }
-
-}
-
-/* ===========================
-   INITIAL CART
-=========================== */
-
-updateCart();
-
-/* ===========================
-   WHATSAPP ORDER
-=========================== */
-
-document.getElementById("orderBtn").addEventListener("click",function(){
-
-    let total = 0;
-
-    let message = "🛒 *Jyoti Gruh Udhyog*%0A";
-    message += "━━━━━━━━━━━━━━%0A%0A";
-
-    menu.forEach(category=>{
-
-        let hasProduct = false;
-
-        category.products.forEach(product=>{
-
-            if(product.qty>0){
-
-                if(!hasProduct){
-
-                    message +=
-                    "*" + category.category + "*%0A";
-
-                    hasProduct = true;
-
-                }
-
-                const amount =
-                    product.qty * product.price;
-
-                total += amount;
-
-                message +=
-                "• " + product.name + "%0A" +
-                product.weight +
-                " × " +
-                product.qty +
-                " = ₹" +
-                amount +
-                "%0A";
-
-            }
-
-        });
-
-        if(hasProduct){
-
-            message += "%0A";
-
-        }
-
-    });
-
-    if(total===0){
-
-        alert("Please add at least one product.");
-
-        return;
-
-    }
-
-    message +=
-    "━━━━━━━━━━━━━━%0A";
-
-    message +=
-    "💰 *Total : ₹" + total + "*";
-
-    const confirmOrder = confirm(
-        "Open WhatsApp and clear cart?"
-    );
-
-    if(!confirmOrder){
-
-        return;
-
-    }
-
-    window.open(
-    "https://wa.me/919712149344?text=" + encodeURIComponent(message),
-    "_blank"
-);
-
-    /* Clear Cart */
-
-    menu.forEach(category=>{
-
-        category.products.forEach(product=>{
-
-            product.qty = 0;
-
-        });
-
-    });
-
-    localStorage.setItem(
-
-        "jyotiProducts",
-
-        JSON.stringify(menu)
-
-    );
-
-    updateCart();
-
-    renderMenu(searchInput.value);
-
-});

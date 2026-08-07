@@ -86,9 +86,19 @@ function renderMenu(search = "") {
 
     menu.forEach(category => {
 
-        const products = category.products.filter(product =>
-            product.name.toLowerCase().includes(search.toLowerCase())
-        );
+        const keyword = search.toLowerCase();
+
+const products = category.products.filter(product =>
+
+    product.name.toLowerCase().includes(keyword) ||
+
+    category.category.toLowerCase().includes(keyword) ||
+
+    product.weight.toLowerCase().includes(keyword) ||
+
+    product.price.toString().includes(keyword)
+
+);
 
         if (products.length === 0) return;
 

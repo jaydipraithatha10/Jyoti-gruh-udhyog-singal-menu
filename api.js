@@ -108,11 +108,22 @@ const products = category.products.filter(product =>
         section.className = "category";
 
         let html = `
-            <h2 class="category-title">
-                ${category.category}
-                <span class="category-count">(${products.length})</span>
-            </h2>
-        `;
+            
+        `;<h2 class="category-title"
+    onclick="toggleCategory('${category.category}')">
+
+    <span>
+        <span id="icon-${category.category}">▼</span>
+        ${category.category}
+    </span>
+
+    <span class="category-count">
+        (${products.length})
+    </span>
+
+</h2>
+
+<div id="cat-${category.category}">
 
         products.forEach(product => {
 

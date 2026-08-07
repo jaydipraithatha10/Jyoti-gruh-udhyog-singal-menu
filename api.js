@@ -106,8 +106,6 @@ const products = category.products.filter(product =>
 
         const section = document.createElement("section");
         section.className = "category";
-
-        let html = `
             
      let html = `
     <h2 class="category-title"

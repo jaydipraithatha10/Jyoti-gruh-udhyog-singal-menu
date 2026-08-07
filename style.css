@@ -183,13 +183,14 @@ footer{
     border-radius:12px;
     font-size:20px;
     margin-bottom:15px;
+    width:100%;
 }
 
 .category-count{
-    font-size:15px;
     background:#c9a96a;
     color:#fff;
-    padding:4px 10px;
+    padding:3px 10px;
     border-radius:20px;
+    font-size:14px;
     font-weight:600;
 }

@@ -156,7 +156,19 @@ const products = category.products.filter(product =>
 
     });
 
-    document.getElementById("productCount").innerText = totalProducts;
+    
+}document.getElementById("productCount").innerText = totalProducts;
+
+if(totalProducts === 0){
+
+    menuContainer.innerHTML = `
+        <div class="no-products">
+            🔍<br><br>
+            No Products Found
+        </div>
+    `;
+
+}
 
 }
 

@@ -2,27 +2,30 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#6b3f20">
+    <meta name="theme-color" content="#6B3F20">
+    <meta name="description" content="Jyoti Gruh Udhyog - Premium Homemade Products">
 
     <title>Jyoti Gruh Udhyog | Product Menu</title>
 
     <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" href="style.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=4">
+
 </head>
 
 <body>
 
 <header class="header">
 
-    <img src="logo.webp" class="logo" alt="Jyoti Gruh Udhyog">
+    <img src="logo.webp" alt="Jyoti Gruh Udhyog" class="logo">
 
     <h1>JYOTI GRUH UDHYOG</h1>
 
@@ -31,17 +34,17 @@
     </p>
 
     <p class="location">
-        📍 Rajkot
+        📍 Rajkot, Gujarat
     </p>
 
     <div class="contact">
 
         <a href="tel:+919712149344" class="call-btn">
-            📞 Call
+            📞 Call Now
         </a>
 
-        <a href="https://wa.me/919712149344" class="whatsapp-btn">
-            WhatsApp
+        <a href="https://wa.me/919712149344" class="whatsapp-btn" target="_blank">
+            💬 WhatsApp
         </a>
 
     </div>
@@ -51,60 +54,58 @@
 <section class="menu-header">
 
     <h2 class="product-heading">
-        PRODUCT LIST (<span id="productCount">0</span>)
+        PRODUCT LIST
+        (<span id="productCount">0</span>)
     </h2>
 
-    <div class="search-section">
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="🔍 Search Products...">
-
-    </div>
+    <input
+        type="search"
+        id="searchInput"
+        placeholder="🔍 Search Products..."
+        autocomplete="off"
+        spellcheck="false">
 
 </section>
 
 <main id="menuContainer">
 
     <div id="loader" class="loader">
+
         <div class="spinner"></div>
+
         <p>Loading Products...</p>
+
     </div>
 
 </main>
 
-<!-- Sticky Cart -->
-
 <div id="cartBar" class="cart-bar">
 
-    <div>
+    <div class="cart-details">
 
         <strong>
             🛒 Cart (<span id="cartItems">0</span>)
         </strong>
 
-        <br>
-
-        <span id="cartTotal">
+        <div id="cartTotal">
             ₹0
-        </span>
+        </div>
 
     </div>
 
     <button id="orderBtn">
-        Order on WhatsApp
+        🟢 Order on WhatsApp
     </button>
 
 </div>
 
 <footer>
 
-    © 2026 Jyoti Gruh Udhyog
+    <p>© 2026 Jyoti Gruh Udhyog</p>
 
 </footer>
 
-<script src="api.js"></script>
+<script src="api.js?v=4"></script>
 
 </body>
 

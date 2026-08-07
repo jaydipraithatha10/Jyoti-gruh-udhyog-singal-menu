@@ -71,6 +71,7 @@ const menu = [
 const menuContainer = document.getElementById("menuContainer");
 const searchInput = document.getElementById("searchInput");
 
+
 function renderMenu(search = "") {
 
     menuContainer.innerHTML = "";
@@ -80,10 +81,10 @@ function renderMenu(search = "") {
     menu.forEach(category => {
 
         const products = category.products.filter(product =>
-            product.toLowerCase().includes(search.toLowerCase())
+            product.name.toLowerCase().includes(search.toLowerCase())
         );
 
-        if(products.length === 0) return;
+        if (products.length === 0) return;
 
         totalProducts += products.length;
 
@@ -92,12 +93,31 @@ function renderMenu(search = "") {
 
         section.innerHTML = `
             <h2 class="category-title">
-    ${category.category}
-    <span class="category-count">(${products.length})</span>
-</h2>
-            <ul class="product-list">
-                ${products.map(product => `<li>${product}</li>`).join("")}
-            </ul>
+                ${category.category}
+                <span class="category-count">(${products.length})</span>
+            </h2>
+
+            <div class="product-list">
+
+                ${products.map(product => `
+                    <div class="product-row">
+
+                        <div class="product-name">
+                            ${product.name}
+                        </div>
+
+                        <div class="product-weight">
+                            ${product.weight}
+                        </div>
+
+                        <div class="product-price">
+                            ${product.price}
+                        </div>
+
+                    </div>
+                `).join("")}
+
+            </div>
         `;
 
         menuContainer.appendChild(section);

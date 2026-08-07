@@ -1,1 +1,166 @@
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#f8f4ee;
+    color:#3f2a1d;
+    min-height:100vh;
+}
+
+.header{
+    background:linear-gradient(180deg,#6b3f20,#8b5a2b);
+    color:#fff;
+    text-align:center;
+    padding:30px 20px;
+    border-bottom-left-radius:30px;
+    border-bottom-right-radius:30px;
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+.logo{
+    width:110px;
+    height:110px;
+    object-fit:contain;
+    border-radius:50%;
+    background:#fff;
+    padding:8px;
+    margin-bottom:15px;
+}
+
+.header h1{
+    font-size:28px;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.tagline{
+    margin-top:8px;
+    color:#ffe3a6;
+    font-size:15px;
+}
+
+.location{
+    margin-top:10px;
+    font-size:16px;
+    font-weight:600;
+}
+
+.contact{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.call-btn,
+.whatsapp-btn{
+    text-decoration:none;
+    color:#fff;
+    padding:12px 22px;
+    border-radius:50px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.call-btn{
+    background:#7a4a25;
+}
+
+.whatsapp-btn{
+    background:#25D366;
+}
+
+.call-btn:hover,
+.whatsapp-btn:hover{
+    transform:translateY(-2px);
+}
+
+.search-section{
+    padding:18px;
+    position:sticky;
+    top:0;
+    background:#f8f4ee;
+    z-index:100;
+}
+
+#searchInput{
+    width:100%;
+    padding:15px 18px;
+    border:2px solid #c9a96a;
+    border-radius:50px;
+    font-size:16px;
+    outline:none;
+}
+
+#searchInput:focus{
+    border-color:#7a4a25;
+}
+
+#menuContainer{
+    padding:20px;
+}
+
+.category{
+    margin-bottom:25px;
+}
+
+.category-title{
+    background:#7a4a25;
+    color:#fff;
+    padding:12px 18px;
+    border-radius:12px;
+    font-size:20px;
+    margin-bottom:15px;
+}
+
+.product-list{
+    list-style:none;
+}
+
+.product-list li{
+    background:#fff;
+    margin-bottom:10px;
+    padding:15px;
+    border-radius:12px;
+    border-left:5px solid #c9a96a;
+    box-shadow:0 4px 10px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.product-list li:hover{
+    transform:translateX(5px);
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    color:#666;
+    font-size:14px;
+}
+
+@media(max-width:480px){
+
+.header h1{
+    font-size:22px;
+}
+
+.logo{
+    width:90px;
+    height:90px;
+}
+
+.category-title{
+    font-size:18px;
+}
+
+}

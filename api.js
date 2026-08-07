@@ -279,3 +279,25 @@ document.getElementById("orderBtn").addEventListener("click",function(){
 });
 
 updateCart();
+
+function toggleCategory(category){
+
+    const box = document.getElementById("cat-" + category);
+
+    const icon = document.getElementById("icon-" + category);
+
+    if(box.style.display === "none"){
+
+        box.style.display = "block";
+
+        icon.innerHTML = "▼";
+
+    }else{
+
+        box.style.display = "none";
+
+        icon.innerHTML = "▶";
+
+    }
+
+}

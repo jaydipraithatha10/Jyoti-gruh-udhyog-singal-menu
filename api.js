@@ -172,3 +172,212 @@ function buildMenu(csv){
 =========================== */
 
 loadProducts();
+
+/* ===========================
+   RENDER MENU
+=========================== */
+
+function renderMenu(search = ""){
+
+    menuContainer.innerHTML = "";
+
+    let totalProducts = 0;
+
+    const keyword = search.toLowerCase().trim();
+
+    menu.forEach(category=>{
+
+        const products = category.products.filter(product=>{
+
+            return(
+
+                product.name
+                .toLowerCase()
+                .includes(keyword)
+
+                ||
+
+                category.category
+                .toLowerCase()
+                .includes(keyword)
+
+                ||
+
+                product.weight
+                .toLowerCase()
+                .includes(keyword)
+
+                ||
+
+                product.price
+                .toString()
+                .includes(keyword)
+
+            );
+
+        });
+
+        if(products.length===0){
+
+            return;
+
+        }
+
+        totalProducts += products.length;
+
+        const section =
+        document.createElement("section");
+
+        section.className = "category";
+
+        let html = `
+
+        <h2
+        class="category-title"
+        onclick="toggleCategory('${category.category}')">
+
+            <span>
+
+                <span
+                id="icon-${category.category}">
+
+                ▼
+
+                </span>
+
+                ${category.category}
+
+            </span>
+
+            <span
+            class="category-count">
+
+            ${products.length}
+
+            </span>
+
+        </h2>
+
+        <div
+        id="cat-${category.category}">
+
+        `;
+
+        products.forEach(product=>{
+
+            html += `
+
+            <div class="product-row">
+
+                <div class="product-name">
+
+                    ${product.name}
+
+                </div>
+
+                <div class="product-info">
+
+                    ${product.weight}
+
+                    •
+
+                    ₹${product.price}
+
+                </div>
+
+                <div class="qty-box">
+
+                    <button
+
+                    class="qty-btn"
+
+                    onclick="changeQty(
+
+                    '${category.category}',
+
+                    '${product.name}',
+
+                    -1
+
+                    )">
+
+                    −
+
+                    </button>
+
+                    <span class="qty">
+
+                    ${product.qty}
+
+                    </span>
+
+                    <button
+
+                    class="qty-btn"
+
+                    onclick="changeQty(
+
+                    '${category.category}',
+
+                    '${product.name}',
+
+                    1
+
+                    )">
+
+                    +
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            `;
+
+        });
+
+        html += "</div>";
+
+        section.innerHTML = html;
+
+        menuContainer.appendChild(section);
+
+    });
+
+    document.getElementById("productCount")
+    .innerText = totalProducts;
+
+    if(totalProducts===0){
+
+        menuContainer.innerHTML = `
+
+        <div class="no-products">
+
+            🔍
+
+            <br><br>
+
+            No Products Found
+
+        </div>
+
+        `;
+
+    }
+
+}
+
+/* ===========================
+   SEARCH
+=========================== */
+
+searchInput.addEventListener(
+
+"input",
+
+function(){
+
+    renderMenu(this.value);
+
+});

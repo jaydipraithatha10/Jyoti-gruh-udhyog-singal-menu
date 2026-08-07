@@ -409,3 +409,115 @@ function toggleCategory(category){
 =========================== */
 
 updateCart();
+
+/* ===========================
+   WHATSAPP ORDER
+=========================== */
+
+document.getElementById("orderBtn").addEventListener("click",function(){
+
+    let total = 0;
+
+    let message = "🛒 *Jyoti Gruh Udhyog*%0A";
+    message += "━━━━━━━━━━━━━━%0A%0A";
+
+    menu.forEach(category=>{
+
+        let hasProduct = false;
+
+        category.products.forEach(product=>{
+
+            if(product.qty>0){
+
+                if(!hasProduct){
+
+                    message +=
+                    "*" + category.category + "*%0A";
+
+                    hasProduct = true;
+
+                }
+
+                const amount =
+                    product.qty * product.price;
+
+                total += amount;
+
+                message +=
+                "• " + product.name + "%0A" +
+                product.weight +
+                " × " +
+                product.qty +
+                " = ₹" +
+                amount +
+                "%0A";
+
+            }
+
+        });
+
+        if(hasProduct){
+
+            message += "%0A";
+
+        }
+
+    });
+
+    if(total===0){
+
+        alert("Please add at least one product.");
+
+        return;
+
+    }
+
+    message +=
+    "━━━━━━━━━━━━━━%0A";
+
+    message +=
+    "💰 *Total : ₹" + total + "*";
+
+    const confirmOrder = confirm(
+        "Open WhatsApp and clear cart?"
+    );
+
+    if(!confirmOrder){
+
+        return;
+
+    }
+
+    window.open(
+
+        "https://wa.me/919712149344?text=" + message,
+
+        "_blank"
+
+    );
+
+    /* Clear Cart */
+
+    menu.forEach(category=>{
+
+        category.products.forEach(product=>{
+
+            product.qty = 0;
+
+        });
+
+    });
+
+    localStorage.setItem(
+
+        "jyotiProducts",
+
+        JSON.stringify(menu)
+
+    );
+
+    updateCart();
+
+    renderMenu(searchInput.value);
+
+});

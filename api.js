@@ -54,11 +54,14 @@ async function loadProducts(){
 
     }));
 
+document.getElementById("loader").style.display = "none";
+
     renderMenu();
 
 }
 
 loadProducts();
+
 
 function renderMenu(search = "") {
 

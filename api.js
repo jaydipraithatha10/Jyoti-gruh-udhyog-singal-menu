@@ -381,3 +381,137 @@ function(){
     renderMenu(this.value);
 
 });
+
+/* ===========================
+   CHANGE QUANTITY
+=========================== */
+
+function changeQty(categoryName, productName, change){
+
+    const category = menu.find(
+        c => c.category === categoryName
+    );
+
+    if(!category) return;
+
+    const product = category.products.find(
+        p => p.name === productName
+    );
+
+    if(!product) return;
+
+    product.qty += change;
+
+    if(product.qty < 0){
+        product.qty = 0;
+    }
+
+    updateCart();
+
+    renderMenu(searchInput.value);
+
+}
+
+/* ===========================
+   UPDATE CART
+=========================== */
+
+function updateCart(){
+
+    let totalItems = 0;
+    let totalPrice = 0;
+
+    menu.forEach(category=>{
+
+        category.products.forEach(product=>{
+
+            if(product.qty > 0){
+
+                totalItems += product.qty;
+
+                totalPrice +=
+                product.qty * product.price;
+
+            }
+
+        });
+
+    });
+
+    cartItems.innerText = totalItems;
+
+    cartTotal.innerText =
+    "₹" + totalPrice;
+
+    if(totalItems > 0){
+
+        cartBar.style.display = "flex";
+
+    }else{
+
+        cartBar.style.display = "none";
+
+    }
+
+}
+
+/* ===========================
+   CATEGORY COLLAPSE
+=========================== */
+
+function toggleCategory(category){
+
+    const box =
+    document.getElementById(
+        "cat-" + category
+    );
+
+    const icon =
+    document.getElementById(
+        "icon-" + category
+    );
+
+    if(!box) return;
+
+    if(box.style.display === "none"){
+
+        box.style.display = "block";
+
+        icon.innerHTML = "▼";
+
+    }else{
+
+        box.style.display = "none";
+
+        icon.innerHTML = "▶";
+
+    }
+
+}
+
+/* ===========================
+   REVIEW
+=========================== */
+
+function sendReview(review){
+
+    const message =
+`નમસ્તે 🙏
+
+મારો અભિપ્રાય:
+
+${review}
+
+આભાર.`;
+
+    window.open(
+
+        "https://wa.me/919712149344?text=" +
+
+        encodeURIComponent(message),
+
+        "_blank"
+
+    );
+
+}

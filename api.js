@@ -59,3 +59,81 @@ async function loadProducts(){
 }
 
 loadProducts();
+
+function renderMenu(search = "") {
+
+    menuContainer.innerHTML = "";
+
+    let totalProducts = 0;
+
+    menu.forEach(category => {
+
+        const products = category.products.filter(product =>
+            product.name.toLowerCase().includes(search.toLowerCase())
+        );
+
+        if (products.length === 0) return;
+
+        totalProducts += products.length;
+
+        const section = document.createElement("section");
+        section.className = "category";
+
+        let html = `
+            <h2 class="category-title">
+                ${category.category}
+                <span class="category-count">(${products.length})</span>
+            </h2>
+        `;
+
+        products.forEach(product => {
+
+            html += `
+                <div class="product-row">
+
+                    <div class="product-name">
+                        ${product.name}
+                    </div>
+
+                    <div class="product-info">
+                        ${product.weight} • ₹${product.price}
+                    </div>
+
+                    <div class="qty-box">
+
+                        <button class="qty-btn"
+                        onclick="changeQty('${category.category}','${product.name}',-1)">
+                        −
+                        </button>
+
+                        <span class="qty">
+                            ${product.qty}
+                        </span>
+
+                        <button class="qty-btn"
+                        onclick="changeQty('${category.category}','${product.name}',1)">
+                        +
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+        });
+
+        section.innerHTML = html;
+
+        menuContainer.appendChild(section);
+
+    });
+
+    document.getElementById("productCount").innerText = totalProducts;
+
+}
+
+searchInput.addEventListener("input", function () {
+
+    renderMenu(this.value);
+
+});

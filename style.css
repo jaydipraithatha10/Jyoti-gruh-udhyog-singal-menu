@@ -296,3 +296,186 @@ body{
 #orderBtn:hover{
     transform:translateY(-2px);
 }
+
+/* ===========================
+   LOADER
+=========================== */
+
+.loader{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:60px 20px;
+}
+
+.spinner{
+    width:50px;
+    height:50px;
+    border:5px solid #e8dccd;
+    border-top:5px solid #6b3f20;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+}
+
+.loader p{
+    margin-top:15px;
+    color:#6b3f20;
+    font-size:16px;
+    font-weight:600;
+}
+
+@keyframes spin{
+
+    0%{
+        transform:rotate(0deg);
+    }
+
+    100%{
+        transform:rotate(360deg);
+    }
+
+}
+
+/* ===========================
+   NO PRODUCTS
+=========================== */
+
+.no-products{
+    text-align:center;
+    padding:80px 20px;
+    color:#777;
+}
+
+.no-products{
+    font-size:22px;
+    font-weight:700;
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+footer{
+    text-align:center;
+    color:#777;
+    font-size:14px;
+    padding:30px 20px 110px;
+}
+
+/* ===========================
+   SCROLLBAR
+=========================== */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#b88a5a;
+    border-radius:20px;
+}
+
+::-webkit-scrollbar-track{
+    background:#f5f1ea;
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:768px){
+
+.header{
+    padding:24px 16px 30px;
+}
+
+.logo{
+    width:90px;
+    height:90px;
+}
+
+.header h1{
+    font-size:23px;
+}
+
+.tagline{
+    font-size:14px;
+}
+
+.location{
+    font-size:15px;
+}
+
+.product-heading{
+    font-size:21px;
+}
+
+.category-title{
+    font-size:16px;
+    padding:14px 16px;
+}
+
+.product-row{
+    padding:18px 15px;
+}
+
+.product-name{
+    font-size:18px;
+}
+
+.product-info{
+    font-size:14px;
+}
+
+.qty-btn{
+    width:42px;
+    height:42px;
+    font-size:22px;
+}
+
+.qty{
+    font-size:20px;
+}
+
+.cart-bar{
+    padding:12px 14px;
+}
+
+#orderBtn{
+    padding:12px 18px;
+    font-size:14px;
+}
+
+footer{
+    padding-bottom:95px;
+}
+
+}
+
+/* ===========================
+   SMALL MOBILE
+=========================== */
+
+@media(max-width:380px){
+
+.product-name{
+    font-size:17px;
+}
+
+.product-heading{
+    font-size:19px;
+}
+
+.call-btn,
+.whatsapp-btn{
+    padding:11px 16px;
+    font-size:14px;
+}
+
+#orderBtn{
+    font-size:13px;
+    padding:11px 16px;
+}
+
+}

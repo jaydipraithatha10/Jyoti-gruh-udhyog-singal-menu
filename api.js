@@ -34,7 +34,10 @@ function renderMenu(search = "") {
         section.className = "category";
 
         section.innerHTML = `
-            <h2 class="category-title">${category.category}</h2>
+            <h2 class="category-title">
+    ${category.category}
+    <span class="category-count">(${products.length})</span>
+</h2>
             <ul class="product-list">
                 ${products.map(product => `<li>${product}</li>`).join("")}
             </ul>

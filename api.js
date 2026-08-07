@@ -11,6 +11,16 @@ const cartTotal = document.getElementById("cartTotal");
 
 async function loadProducts(){
 
+    const savedData = localStorage.getItem("jyotiProducts");
+
+if(savedData){
+
+    menu = JSON.parse(savedData);
+
+    renderMenu();
+
+}
+
     const response = await fetch(SHEET_URL);
 
     const csv = await response.text();

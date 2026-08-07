@@ -1,5 +1,3 @@
-
-
 *{
     margin:0;
     padding:0;
@@ -7,14 +5,9 @@
     font-family:'Poppins',sans-serif;
 }
 
-html{
-    scroll-behavior:smooth;
-}
-
 body{
-    background:#f8f4ee;
-    color:#3f2a1d;
-    min-height:100vh;
+    background:#f6f2eb;
+    color:#333;
 }
 
 .header{
@@ -24,34 +17,29 @@ body{
     padding:30px 20px;
     border-bottom-left-radius:30px;
     border-bottom-right-radius:30px;
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
 }
 
 .logo{
     width:110px;
     height:110px;
-    object-fit:contain;
-    border-radius:50%;
     background:#fff;
+    border-radius:50%;
     padding:8px;
-    margin-bottom:15px;
+    object-fit:contain;
 }
 
 .header h1{
+    margin-top:15px;
     font-size:28px;
-    font-weight:700;
-    letter-spacing:1px;
 }
 
 .tagline{
     margin-top:8px;
     color:#ffe3a6;
-    font-size:15px;
 }
 
 .location{
     margin-top:10px;
-    font-size:16px;
     font-weight:600;
 }
 
@@ -60,55 +48,50 @@ body{
     justify-content:center;
     gap:12px;
     margin-top:20px;
-    flex-wrap:wrap;
 }
 
 .call-btn,
 .whatsapp-btn{
     text-decoration:none;
     color:#fff;
-    padding:12px 22px;
-    border-radius:50px;
+    padding:12px 20px;
+    border-radius:30px;
     font-weight:600;
-    transition:.3s;
 }
 
 .call-btn{
-    background:#7a4a25;
+    background:#5f3920;
 }
 
 .whatsapp-btn{
     background:#25D366;
 }
 
-.call-btn:hover,
-.whatsapp-btn:hover{
-    transform:translateY(-2px);
-}
-
-.search-section{
-    padding:18px;
+.menu-header{
     position:sticky;
     top:0;
-    background:#f8f4ee;
+    background:#f6f2eb;
     z-index:100;
+    padding:15px;
+}
+
+.product-heading{
+    text-align:center;
+    color:#6b3f20;
+    margin-bottom:12px;
 }
 
 #searchInput{
     width:100%;
-    padding:15px 18px;
-    border:2px solid #c9a96a;
-    border-radius:50px;
-    font-size:16px;
+    padding:14px;
+    border-radius:30px;
+    border:2px solid #d6b27c;
     outline:none;
-}
-
-#searchInput:focus{
-    border-color:#7a4a25;
+    font-size:15px;
 }
 
 #menuContainer{
-    padding:20px;
+    padding:15px;
 }
 
 .category{
@@ -116,110 +99,42 @@ body{
 }
 
 .category-title{
-    background:#7a4a25;
+    background:#6b3f20;
     color:#fff;
-    padding:12px 18px;
+    padding:14px;
     border-radius:12px;
-    font-size:20px;
-    margin-bottom:15px;
-}
-
-.product-list{
-    list-style:none;
-}
-
-.product-list li{
-    background:#fff;
-    margin-bottom:10px;
-    padding:15px;
-    border-radius:12px;
-    border-left:5px solid #c9a96a;
-    box-shadow:0 4px 10px rgba(0,0,0,.08);
-    transition:.3s;
-}
-
-.product-list li:hover{
-    transform:translateX(5px);
-}
-
-footer{
-    text-align:center;
-    padding:25px;
-    color:#666;
-    font-size:14px;
-}
-
-@media(max-width:480px){
-
-.header h1{
-    font-size:22px;
-}
-
-.logo{
-    width:90px;
-    height:90px;
-}
-
-.category-title{
-    font-size:18px;
-}
-
-}
-.product-heading{
-    text-align:center;
-    font-size:24px;
-    font-weight:700;
-    color:#6b3f20;
-    margin:25px 0 10px;
-}
-
-.category-title{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    background:#7a4a25;
-    color:#fff;
-    padding:12px 18px;
-    border-radius:12px;
-    font-size:20px;
-    margin-bottom:15px;
-    width:100%;
 }
 
 .category-count{
-    background:#c9a96a;
-    color:#fff;
-    padding:3px 10px;
+    background:#fff;
+    color:#6b3f20;
+    padding:4px 10px;
     border-radius:20px;
-    font-size:14px;
-    font-weight:600;
+    font-size:13px;
+    font-weight:bold;
 }
 
+/* Product Card */
+
 .product-row{
-    display:grid;
-    grid-template-columns:2fr 80px 70px;
-    align-items:center;
-    gap:12px;
-    padding:14px 0;
-    border-bottom:1px solid #e7d9c7;
+    background:#fff;
+    border-radius:18px;
+    padding:18px;
+    margin-top:15px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
 .product-name{
-    font-weight:600;
+    font-size:18px;
+    font-weight:700;
     color:#4b2e1f;
 }
 
-.product-weight{
-    text-align:center;
+.product-info{
+    margin-top:8px;
     color:#777;
-    font-size:14px;
-}
-
-.product-price{
-    background:#7a4a25;
-    color:#fff;
-    padding:4px 10px;
-    border-radius:20px;
-    text-align:center;
-    font-weight:700;
+    font-size:15px;
 }

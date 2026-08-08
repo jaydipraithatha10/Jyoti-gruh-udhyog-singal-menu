@@ -107,7 +107,7 @@ function buildMenu(csv){
 
         const cols = row.split(",");
 
-        if(cols.length < 6){
+        if(cols.length < 7){
 
             return;
 
@@ -116,24 +116,27 @@ function buildMenu(csv){
         const category =
         cols[1].trim();
 
-        const product = {
+        
+const product = {
 
-            name:
-            cols[2].trim(),
+    name: cols[2].trim(),
 
-            weight:
-            cols[3].trim(),
+    weight: cols[3].trim(),
 
-            price:
-            Number(cols[4]),
+    price: Number(cols[4]),
 
-            status:
-            cols[5].trim(),
+    status: cols[5].trim(),
 
-            qty:0
+    voiceKeywords: cols[6]
+        ? cols[6]
+            .toLowerCase()
+            .split(",")
+            .map(k => k.trim())
+        : [],
 
-        };
+    qty: 0
 
+};
         if(product.status !== "Active"){
 
             return;

@@ -487,36 +487,90 @@ function(){
    CHANGE QUANTITY
 =========================== */
 
-function changeQty(categoryName, productName, change){
+/* ===========================
+   CHANGE QUANTITY
+=========================== */
 
-    const category = menu.find(c => c.category === categoryName);
-    if(!category) return;
+function changeQty(
+    categoryName,
+    productName,
+    weight,
+    change
+){
 
-    const product = category.products.find(p => p.name === productName);
-    if(!product) return;
+    const category =
+        menu.find(
+            c => c.category === categoryName
+        );
+
+    if(!category){
+        return;
+    }
+
+
+    const product =
+        category.products.find(
+            p =>
+                p.name === productName &&
+                p.weight === weight
+        );
+
+    if(!product){
+        return;
+    }
+
+
+    /* ===========================
+       CHANGE QTY
+    =========================== */
 
     product.qty += change;
 
+
     if(product.qty < 0){
+
         product.qty = 0;
+
     }
 
-    // માત્ર આ Product ની Qty Update કરો
-    const buttons = document.querySelectorAll(".product-row");
 
-    buttons.forEach(row => {
+    /* ===========================
+       UPDATE ONLY THIS QTY
+       PAGE REFRESH / RERENDER નહીં
+    =========================== */
 
-        const name = row.querySelector(".product-name");
+    const rows =
+        document.querySelectorAll(
+            ".product-option"
+        );
 
-        if(name && name.innerText.trim() === productName){
 
-            row.querySelector(".qty").innerText = product.qty;
+    rows.forEach(row => {
+
+        if(
+            row.dataset.productName === productName &&
+            row.dataset.weight === weight
+        ){
+
+            const qty =
+                row.querySelector(".qty");
+
+            if(qty){
+
+                qty.innerText =
+                    product.qty;
+
+            }
 
         }
 
     });
 
-    // Cart Update
+
+    /* ===========================
+       UPDATE CART
+    =========================== */
+
     updateCart();
 
 }

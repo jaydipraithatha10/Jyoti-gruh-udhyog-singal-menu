@@ -665,6 +665,51 @@ encodeURIComponent(message),
 "_blank"
 
 );
+/* ===========================
+   VOICE SEARCH V1
+=========================== */
+
+if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "gu-IN";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 3;
+
+    voiceBtn.addEventListener("click", () => {
+
+        recognition.start();
+
+        voiceBtn.classList.add("listening");
+
+        voiceResult.innerHTML = "🎤 બોલો...";
+
+    });
+
+    recognition.onresult = function(event){
+
+        const text = event.results[0][0].transcript
+            .toLowerCase()
+            .trim();
+
+        processVoiceSearch(text);
+
+    };
+
+    recognition.onend = function(){
+
+        voiceBtn.classList.remove("listening");
+
+    };
+
+}
+
 
     /* CLEAR CART */
 

@@ -461,29 +461,23 @@ function updateCart(){
 
 function toggleCategory(category){
 
-    const box =
-    document.getElementById(
-        "cat-" + category
-    );
+    // બધા category બંધ કરો
+    document.querySelectorAll('[id^="cat-"]').forEach(box=>{
+        box.style.display = "none";
+    });
 
-    const icon =
-    document.getElementById(
-        "icon-" + category
-    );
+    document.querySelectorAll('[id^="icon-"]').forEach(icon=>{
+        icon.innerHTML = "▶";
+    });
 
-    if(!box) return;
+    // જે category પર click કર્યું તે open કરો
+    const box = document.getElementById("cat-" + category);
+    const icon = document.getElementById("icon-" + category);
 
-    if(box.style.display === "none"){
+    if(box){
 
         box.style.display = "block";
-
         icon.innerHTML = "▼";
-
-    }else{
-
-        box.style.display = "none";
-
-        icon.innerHTML = "▶";
 
     }
 

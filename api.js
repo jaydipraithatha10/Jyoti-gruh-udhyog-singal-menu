@@ -685,7 +685,7 @@ encodeURIComponent(message),
 });
 
 /* ===========================
-   VOICE ORDER V9
+   VOICE ORDER V10
 =========================== */
 
 if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
@@ -701,7 +701,7 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
     recognition.interimResults = false;
     recognition.maxAlternatives = 3;
 
-    voiceBtn.addEventListener("click", () => {
+    voiceBtn.addEventListener("click", function () {
 
         recognition.start();
 
@@ -711,159 +711,29 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
 
     });
 
-    recognition.onresult = function(event){
+    recognition.onresult = function (event) {
 
-        let text =
-        event.results[0][0].transcript
-        .toLowerCase()
-        .trim();
+        const text = event.results[0][0].transcript
+            .toLowerCase()
+            .trim();
 
         processVoiceOrder(text);
 
     };
 
-    recognition.onerror = function(){
+    recognition.onerror = function () {
 
         voiceBtn.classList.remove("listening");
 
         voiceResult.innerHTML =
-        "❌ ફરી પ્રયત્ન કરો";
+            "❌ ફરી પ્રયત્ન કરો";
 
     };
 
-    recognition.onend = function(){
+    recognition.onend = function () {
 
         voiceBtn.classList.remove("listening");
 
     };
-
-}
-
-/* ===========================
-   PROCESS VOICE
-=========================== */
-
-function processVoiceOrder(text){
-
-    voiceResult.innerHTML =
-    "🎤 " + text;
-
-    if(
-        text.includes("order") ||
-        text.includes("ઓર્ડર")
-    ){
-
-        document.getElementById("orderBtn").click();
-
-        return;
-
-    }
-
-    const found =
-    findVoiceProduct(text);
-
-    if(!found){
-
-        searchInput.value = text;
-
-        renderMenu(text);
-
-    }
-
-}
-
-/* ===========================
-   FIND PRODUCT
-=========================== */
-
-function findVoiceProduct(text){
-
-    text = text.toLowerCase().trim();
-
-    let qty = 1;
-
-    const match = text.match(/\d+/);
-
-    if(match){
-        qty = parseInt(match[0]);
-    }
-
-    text = text
-        .replace(/\d+/g,"")
-        .replace(/packet|pack|gm|gram|grams|add|order/gi,"")
-        .trim();
-
-    for(const category of menu){
-
-        for(const product of category.products){
-
-            if(!product.voiceKeywords) continue;
-
-            let bestProduct = null;
-let bestScore = 0;
-
-for (const category of menu) {
-
-    for (const product of category.products) {
-
-        if (!product.voiceKeywords) continue;
-
-        for (const keyword of product.voiceKeywords) {
-
-            const k = keyword.toLowerCase().trim();
-
-            if (text.includes(k) && k.length > bestScore) {
-
-                bestScore = k.length;
-                bestProduct = product;
-
-            }
-
-        }
-
-    }
-
-}
-
-if (bestProduct) {
-
-    bestProduct.qty += qty;
-
-    updateCart();
-
-    renderMenu(searchInput.value);
-
-    voiceResult.innerHTML =
-        "✅ " + bestProduct.name + " × " + qty;
-
-    return true;
-
-}
-
-voiceResult.innerHTML = "❌ Product Not Found";
-return false;
-
-            if(matched){
-
-                product.qty += qty;
-
-                updateCart();
-
-                renderMenu(searchInput.value);
-
-                voiceResult.innerHTML =
-                    "✅ " + product.name + " × " + qty;
-
-                return true;
-
-            }
-
-        }
-
-    }
-
-    voiceResult.innerHTML = "❌ Product Not Found";
-
-    return false;
 
 }

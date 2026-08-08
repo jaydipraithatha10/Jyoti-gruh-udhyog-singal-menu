@@ -758,67 +758,37 @@ findVoiceProduct(text);
    SMART VOICE MATCH
 =========================== */
 
-function findVoiceProduct(text){
+function findVoiceProduct(voiceText) {
+    voiceText = voiceText.toLowerCase().trim();
 
-    let qty = 1;
-
-    // Quantity ઓળખો
-    if(text.includes("2") || text.includes("two")) qty = 2;
-    if(text.includes("3") || text.includes("three")) qty = 3;
-    if(text.includes("4") || text.includes("four")) qty = 4;
-    if(text.includes("5") || text.includes("five")) qty = 5;
-
-    // Extra Words Remove
-    text = text
-        .replace(/one|two|three|four|five/gi,"")
-        .replace(/[1-5]/g,"")
-        .replace(/packet|pack|gm|gram|grams/gi,"")
+    // Remove common words
+    voiceText = voiceText
+        .replace(/add|order|please|pack|packet|kg|gm|grams|gram|piece|pcs|qty|quantity/gi, "")
         .trim();
 
     let found = null;
 
-    menu.forEach(category=>{
+    for (const product of products) {
 
-        category.products.forEach(product=>{
+        const productName = product.name.toLowerCase();
 
-            
-const productName = product.name
-    .toLowerCase()
-    .replace(/\s+/g,"");
+        // Direct match
+        if (
+            productName.includes(voiceText) ||
+            voiceText.includes(productName)
+        ) {
+            found = product;
+            break;
+        }
 
-const voiceText = text
-    .toLowerCase()
-    .replace(/\s+/g,"");
+        // Word by word match
+        const words = voiceText.split(/\s+/);
 
-if(
-    productName.includes(voiceText) ||
-    voiceText.includes(productName)
-){
-    found = product;
-}
-        });
-
-    });
-
-    if(found){
-
-        found.qty += qty;
-
-        updateCart();
-
-        renderMenu(searchInput.value);
-
-        voiceResult.innerHTML =
-        "✅ " +
-        found.name +
-        " × " +
-        qty;
-
-    }else{
-
-        voiceResult.innerHTML =
-        "❌ Product Not Found";
-
+        if (words.some(word => word.length > 2 && productName.includes(word))) {
+            found = product;
+            break;
+        }
     }
 
+    return found;
 }

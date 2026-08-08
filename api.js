@@ -686,7 +686,7 @@ encodeURIComponent(message),
 });
 
 /* ===========================
-   VOICE ORDER V7
+   VOICE ORDER V9
 =========================== */
 
 if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
@@ -697,10 +697,10 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
 
     const recognition = new SpeechRecognition();
 
-    recognition.lang = "en-IN";
+    recognition.lang = "gu-IN";
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    recognition.maxAlternatives = 3;
 
     voiceBtn.addEventListener("click", () => {
 
@@ -712,21 +712,32 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
 
     });
 
-    recognition.onresult = function (event) {
+    recognition.onresult = function(event){
 
-        const text = event.results[0][0].transcript
-            .toLowerCase()
-            .trim();
+        let text =
+        event.results[0][0].transcript
+        .toLowerCase()
+        .trim();
 
         processVoiceOrder(text);
 
     };
 
-    recognition.onend = function () {
+    recognition.onerror = function(){
+
+        voiceBtn.classList.remove("listening");
+
+        voiceResult.innerHTML =
+        "❌ ફરી પ્રયત્ન કરો";
+
+    };
+
+    recognition.onend = function(){
 
         voiceBtn.classList.remove("listening");
 
     };
+
 }
 
 /* ===========================
@@ -735,9 +746,13 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
 
 function processVoiceOrder(text){
 
-    voiceResult.innerHTML = "🎤 " + text;
+    voiceResult.innerHTML =
+    "🎤 " + text;
 
-    if(text.includes("order") || text.includes("ઓર્ડર")){
+    if(
+        text.includes("order") ||
+        text.includes("ઓર્ડર")
+    ){
 
         document.getElementById("orderBtn").click();
 
@@ -745,139 +760,74 @@ function processVoiceOrder(text){
 
     }
 
-    searchInput.value = text;
-
-    renderMenu(text);
-
+    const found =
     findVoiceProduct(text);
+
+    if(!found){
+
+        searchInput.value = text;
+
+        renderMenu(text);
+
+    }
 
 }
 
 /* ===========================
-   SMART VOICE MATCH
+   FIND PRODUCT
 =========================== */
 
-function findVoiceProduct(voiceText){
+function findVoiceProduct(text){
 
-    voiceText = voiceText.toLowerCase().trim();
+    text = text
+    .toLowerCase()
+    .trim();
 
-    voiceText = voiceText
-        .replace(/add|order|please|pack|packet|kg|gm|grams|gram|piece|pcs|qty|quantity/gi,"")
-        .trim();
+    let qty = 1;
 
-    let found = null;
+    const number =
+    text.match(/\d+/);
 
-    menu.forEach(category=>{
+    if(number){
 
-        category.products.forEach(product=>{
-
-            if(found) return;
-
-            const name = product.name.toLowerCase();
-
-            if(
-                name.includes(voiceText) ||
-                voiceText.includes(name)
-            ){
-                found = product;
-                return;
-            }
-
-            const words = voiceText.split(/\s+/);
-
-            if(words.some(word => word.length > 2 && name.includes(word))){
-                found = product;
-            }
-
-        });
-
-    });
-
-    if(found){
-
-        found.qty++;
-
-        updateCart();
-
-        renderMenu(searchInput.value);
-
-        voiceResult.innerHTML =
-            "✅ " + found.name + " Added";
-
-    }else{
-
-        voiceResult.innerHTML =
-            "❌ Product Not Found";
+        qty =
+        parseInt(number[0]);
 
     }
 
-/* ===========================
-   SMART PRODUCT ALIAS
-=========================== */
+    text = text
+    .replace(/\d+/g,"")
+    .replace(/add|order|packet|pack|gm|gram|grams|qty|quantity/gi,"")
+    .trim();
 
-const aliases = {
+    for(const category of menu){
 
-    "farali chakri": [
-        "chakri",
-        "ચકરી",
-        "farali chakri"
-    ],
+        for(const product of category.products){
 
-    "farali bhakharwadi": [
-        "bhakharwadi",
-        "ભાખરવડી",
-        "bhakarwadi"
-    ],
+            if(product.voiceKeywords){
 
-    "farali ghughra": [
-        "ghughra",
-        "ઘૂઘરા"
-    ],
+                const ok =
+                product.voiceKeywords.some(k=>
+                    text.includes(k)
+                );
 
-    "farali white spring": [
-        "white spring",
-        "spring",
-        "સપ્રિંગ"
-    ],
+                if(ok){
 
-    "farali white ball": [
-        "white ball",
-        "ball",
-        "વ્હાઇટ બોલ"
-    ],
+                    product.qty += qty;
 
-    "rajgira khajur": [
-        "rajgira",
-        "khajur",
-        "રાજગીરા"
-    ],
+                    updateCart();
 
-    "banana wafer": [
-        "banana wafer",
-        "wafer",
-        "વેફર"
-    ],
+                    renderMenu(searchInput.value);
 
-    "khakhra": [
-        "khakhra",
-        "ખાખરા"
-    ]
+                    voiceResult.innerHTML =
+                    "✅ " +
+                    product.name +
+                    " × " +
+                    qty;
 
-};
+                    return true;
 
-for (const key in aliases) {
-
-    if (found) break;
-
-    if (product.name.toLowerCase().includes(key)) {
-
-        for (const word of aliases[key]) {
-
-            if (voiceText.includes(word.toLowerCase())) {
-
-                found = product;
-
-                break;
+                }
 
             }
 
@@ -885,6 +835,6 @@ for (const key in aliases) {
 
     }
 
-}
+    return false;
 
 }

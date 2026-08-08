@@ -737,3 +737,31 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
     };
 
 }
+
+/* ===========================
+   PROCESS VOICE
+=========================== */
+
+function processVoiceOrder(text){
+
+    voiceResult.innerHTML = "🎤 " + text;
+
+    text = text.toLowerCase().trim();
+
+    if(
+        text.includes("order") ||
+        text.includes("ઓર્ડર")
+    ){
+        document.getElementById("orderBtn").click();
+        return;
+    }
+
+    if(findVoiceProduct(text)){
+        return;
+    }
+
+    searchInput.value = text;
+
+    renderMenu(text);
+
+}

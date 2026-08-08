@@ -177,6 +177,11 @@ loadProducts();
    RENDER MENU
 =========================== */
 
+       /* ===========================
+   RENDER MENU
+   SAME PRODUCT GROUPING
+=========================== */
+
 function renderMenu(search = ""){
 
     menuContainer.innerHTML = "";
@@ -185,85 +190,129 @@ function renderMenu(search = ""){
 
     const keyword = search.toLowerCase().trim();
 
-    menu.forEach(category=>{
+    menu.forEach(category => {
 
-        const products = category.products.filter(product=>{
+        /* ===========================
+           FILTER PRODUCTS
+        =========================== */
 
-            return(
+        const filteredProducts =
+        category.products.filter(product => {
 
+            return (
                 product.name
-                .toLowerCase()
-                .includes(keyword)
+                    .toLowerCase()
+                    .includes(keyword)
 
                 ||
 
                 category.category
-                .toLowerCase()
-                .includes(keyword)
+                    .toLowerCase()
+                    .includes(keyword)
 
                 ||
 
                 product.weight
-                .toLowerCase()
-                .includes(keyword)
+                    .toLowerCase()
+                    .includes(keyword)
 
                 ||
 
                 product.price
-                .toString()
-                .includes(keyword)
-
+                    .toString()
+                    .includes(keyword)
             );
 
         });
 
-        if(products.length===0){
-
+        if(filteredProducts.length === 0){
             return;
-
         }
 
-        totalProducts += products.length;
+
+        /* ===========================
+           GROUP SAME PRODUCT NAME
+        =========================== */
+
+        const grouped = {};
+
+        filteredProducts.forEach(product => {
+
+            const key =
+                product.name.toLowerCase().trim();
+
+            if(!grouped[key]){
+
+                grouped[key] = [];
+
+            }
+
+            grouped[key].push(product);
+
+        });
+
+
+        const productGroups =
+            Object.values(grouped);
+
+
+        totalProducts += productGroups.length;
+
+
+        /* ===========================
+           CATEGORY
+        =========================== */
 
         const section =
         document.createElement("section");
 
         section.className = "category";
 
+
         let html = `
 
         <h2
-        class="category-title"
-        onclick="toggleCategory('${category.category}')">
+            class="category-title"
+            onclick="toggleCategory('${category.category}')"
+        >
 
             <span>
 
                 <span
-                id="icon-${category.category}">
-
-                ▼
-
+                    id="icon-${category.category}"
+                >
+                    ▶
                 </span>
 
                 ${category.category}
 
             </span>
 
-            <span
-            class="category-count">
+            <span class="category-count">
 
-            ${products.length}
+                ${productGroups.length}
 
             </span>
 
         </h2>
 
+
         <div
-        
-<div id="cat-${category.category}" style="display:none;">
+            id="cat-${category.category}"
+            style="display:none;"
+        >
         `;
 
-        products.forEach(product=>{
+
+        /* ===========================
+           PRODUCT GROUP
+        =========================== */
+
+        productGroups.forEach(products => {
+
+            const firstProduct =
+                products[0];
+
 
             html += `
 
@@ -271,65 +320,88 @@ function renderMenu(search = ""){
 
                 <div class="product-name">
 
-                    ${product.name}
+                    ${firstProduct.name}
 
                 </div>
 
-                <div class="product-info">
+            `;
 
-                    ${product.weight}
 
-                    •
+            /* ===========================
+               WEIGHT / PRICE OPTIONS
+            =========================== */
 
-                    ₹${product.price}
+            products.forEach(product => {
+
+                html += `
+
+                <div
+                    class="product-option"
+                    data-product-name="${product.name}"
+                    data-weight="${product.weight}"
+                >
+
+                    <div class="product-info">
+
+                        ${product.weight}
+
+                        •
+
+                        ₹${product.price}
+
+                    </div>
+
+
+                    <div class="qty-box">
+
+                        <button
+                            type="button"
+                            class="qty-btn"
+                            onclick="event.stopPropagation(); changeQty(
+                                '${category.category}',
+                                '${product.name}',
+                                '${product.weight}',
+                                -1
+                            )"
+                        >
+
+                            −
+
+                        </button>
+
+
+                        <span class="qty">
+
+                            ${product.qty}
+
+                        </span>
+
+
+                        <button
+                            type="button"
+                            class="qty-btn"
+                            onclick="event.stopPropagation(); changeQty(
+                                '${category.category}',
+                                '${product.name}',
+                                '${product.weight}',
+                                1
+                            )"
+                        >
+
+                            +
+
+                        </button>
+
+                    </div>
 
                 </div>
 
-                <div class="qty-box">
+                `;
 
-                    <button
+            });
 
-                    class="qty-btn"
 
-                    onclick="changeQty(
-
-                    '${category.category}',
-
-                    '${product.name}',
-
-                    -1
-
-                    )">
-
-                    −
-
-                    </button>
-
-                    <span class="qty">
-
-                    ${product.qty}
-
-                    </span>
-
-                    <button
-
-                    class="qty-btn"
-
-                    onclick="changeQty(
-
-                    '${category.category}',
-
-                    '${product.name}',
-
-                    1
-
-                    )">
-
-                    +
-
-                    </button>
-
-                </div>
+            html += `
 
             </div>
 
@@ -337,7 +409,13 @@ function renderMenu(search = ""){
 
         });
 
-        html += "</div>";
+
+        html += `
+
+        </div>
+
+        `;
+
 
         section.innerHTML = html;
 
@@ -345,28 +423,51 @@ function renderMenu(search = ""){
 
     });
 
-    document.getElementById("productCount")
-    .innerText = totalProducts;
 
-    if(totalProducts===0){
+    /* ===========================
+       PRODUCT COUNT
+    =========================== */
+
+    const countElement =
+        document.getElementById("productCount");
+
+    if(countElement){
+
+        countElement.innerText =
+            totalProducts;
+
+    }
+
+
+    /* ===========================
+       NO PRODUCTS
+    =========================== */
+
+    if(totalProducts === 0){
 
         menuContainer.innerHTML = `
 
-        <div class="no-products">
+            <div class="no-products">
 
-            🔍
+                🔍
 
-            <br><br>
+                <br><br>
 
-            No Products Found
+                No Products Found
 
-        </div>
+            </div>
 
         `;
 
     }
 
 }
+                
+           
+        
+
+
+                    
 
 /* ===========================
    SEARCH

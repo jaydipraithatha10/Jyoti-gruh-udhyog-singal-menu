@@ -679,3 +679,73 @@ encodeURIComponent(message),
     renderMenu();
 
 });
+
+/* ===========================
+   VOICE SEARCH
+=========================== */
+
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    voiceBtn.addEventListener("click", () => {
+
+        recognition.start();
+
+        voiceBtn.classList.add("listening");
+
+        voiceResult.innerHTML = "🎤 Listening...";
+
+    });
+
+    recognition.onresult = function (event) {
+
+        const text =
+            event.results[0][0].transcript
+            .toLowerCase()
+            .trim();
+
+        processVoiceOrder(text);
+
+    };
+
+    recognition.onend = function () {
+
+        voiceBtn.classList.remove("listening");
+
+    };
+
+}
+
+/* ===========================
+   VOICE ORDER
+=========================== */
+
+function processVoiceOrder(text){
+
+    voiceResult.innerHTML = "🎤 " + text;
+
+    if(
+        text.includes("order") ||
+        text.includes("ઓર્ડર")
+    ){
+
+        document.getElementById("orderBtn").click();
+
+        return;
+
+    }
+
+    searchInput.value = text;
+
+    renderMenu(text);
+
+}

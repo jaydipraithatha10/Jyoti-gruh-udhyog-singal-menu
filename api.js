@@ -779,16 +779,21 @@ function findVoiceProduct(text){
 
         category.products.forEach(product=>{
 
-            if(
-                product.name
-                .toLowerCase()
-                .includes(text)
-            ){
+            
+const productName = product.name
+    .toLowerCase()
+    .replace(/\s+/g,"");
 
-                found = product;
+const voiceText = text
+    .toLowerCase()
+    .replace(/\s+/g,"");
 
-            }
-
+if(
+    productName.includes(voiceText) ||
+    voiceText.includes(productName)
+){
+    found = product;
+}
         });
 
     });

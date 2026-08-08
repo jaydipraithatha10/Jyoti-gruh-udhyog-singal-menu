@@ -598,8 +598,10 @@ encodeURIComponent(message),
 "_blank"
 
 );
+
+
 /* ===========================
-   VOICE SEARCH V1
+   VOICE SEARCH
 =========================== */
 
 if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
@@ -615,7 +617,7 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
     recognition.interimResults = false;
     recognition.maxAlternatives = 3;
 
-    voiceBtn.addEventListener("click", () => {
+    voiceBtn.addEventListener("click", function () {
 
         recognition.start();
 
@@ -625,17 +627,39 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
 
     });
 
-    recognition.onresult = function(event){
+    recognition.onresult = function (event) {
 
-        const text = event.results[0][0].transcript
+        let text = event.results[0][0].transcript
             .toLowerCase()
             .trim();
 
-        processVoiceSearch(text);
+        // Smart Replace
+        text = text
+            .replace(/nylon/g, "naylon")
+            .replace(/jowar/g, "juwar")
+            .replace(/juvar/g, "juwar")
+            .replace(/lasen/g, "lasan")
+            .replace(/bajra/g, "bajri")
+            .replace(/show|search|please|packet|pack|gm|gram|grams/gi, "")
+            .trim();
+
+        searchInput.value = text;
+
+        voiceResult.innerHTML = "🎤 " + text;
+
+        renderMenu(text);
 
     };
 
-    recognition.onend = function(){
+    recognition.onerror = function () {
+
+        voiceBtn.classList.remove("listening");
+
+        voiceResult.innerHTML = "❌ ફરી પ્રયત્ન કરો";
+
+    };
+
+    recognition.onend = function () {
 
         voiceBtn.classList.remove("listening");
 
@@ -644,73 +668,5 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
 }
 
 
-/* ===========================
-   PROCESS VOICE SEARCH
-=========================== */
 
-function processVoiceSearch(text){
-
-    voiceResult.innerHTML = "🎤 " + text;
-
-    text = text.toLowerCase().trim();
-
-    // Search box માં લખો
-    searchInput.value = text;
-
-    // Product filter કરો
-    renderMenu(text);
-
-}
-
-/* ===========================
-   SMART VOICE SEARCH
-=========================== */
-
-function normalizeVoice(text){
-
-    text = text.toLowerCase();
-
-    text = text
-        .replace(/naylon/g,"nylon")
-        .replace(/nylon/g,"naylon")
-        .replace(/lasen/g,"lasan")
-        .replace(/juvar/g,"juwar")
-        .replace(/jowar/g,"juwar")
-        .replace(/bajra/g,"bajri")
-        .replace(/packet|pack|gm|gram|grams|please|show|search/gi,"")
-        .trim();
-
-    return text;
-
-}
-
-function processVoiceSearch(text){
-
-    text = normalizeVoice(text);
-
-    voiceResult.innerHTML = "🎤 " + text;
-
-    searchInput.value = text;
-
-    renderMenu(text);
-
-}
-
-    /* CLEAR CART */
-
-    menu.forEach(category=>{
-
-        category.products.forEach(product=>{
-
-            product.qty = 0;
-
-        });
-
-    });
-
-    updateCart();
-
-    renderMenu();
-
-});
 

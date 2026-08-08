@@ -803,19 +803,14 @@ function findVoiceProduct(text){
 
             if(product.voiceKeywords){
 
-                
-const ok = product.voiceKeywords.some(keyword => {
+            const ok = product.voiceKeywords.some(keyword => {
 
-    keyword = keyword
-        .toLowerCase()
-        .trim();
+    keyword = keyword.toLowerCase().trim();
 
-    return (
-        text.includes(keyword) ||
-        keyword.includes(text)
-    );
+    return text === keyword;
 
-});
+});    
+
 
 if(!ok){
 

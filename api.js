@@ -574,6 +574,8 @@ alert(text);
 
 function processVoiceOrder(text){
 
+console.log("VOICE :", text);
+alert(text);
     text = text.toLowerCase();
 
     alert("તમે કહ્યું : " + text);

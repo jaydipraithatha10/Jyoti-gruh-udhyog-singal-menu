@@ -746,6 +746,72 @@ function processVoiceOrder(text){
 
     searchInput.value = text;
 
-    renderMenu(text);
+renderMenu(text);
+
+findVoiceProduct(text);
+
+}
+
+/* ===========================
+   SMART VOICE MATCH
+=========================== */
+
+function findVoiceProduct(text){
+
+    let qty = 1;
+
+    // Quantity ઓળખો
+    if(text.includes("2") || text.includes("two")) qty = 2;
+    if(text.includes("3") || text.includes("three")) qty = 3;
+    if(text.includes("4") || text.includes("four")) qty = 4;
+    if(text.includes("5") || text.includes("five")) qty = 5;
+
+    // Extra Words Remove
+    text = text
+        .replace(/one|two|three|four|five/gi,"")
+        .replace(/[1-5]/g,"")
+        .replace(/packet|pack|gm|gram|grams/gi,"")
+        .trim();
+
+    let found = null;
+
+    menu.forEach(category=>{
+
+        category.products.forEach(product=>{
+
+            if(
+                product.name
+                .toLowerCase()
+                .includes(text)
+            ){
+
+                found = product;
+
+            }
+
+        });
+
+    });
+
+    if(found){
+
+        found.qty += qty;
+
+        updateCart();
+
+        renderMenu(searchInput.value);
+
+        voiceResult.innerHTML =
+        "✅ " +
+        found.name +
+        " × " +
+        qty;
+
+    }else{
+
+        voiceResult.innerHTML =
+        "❌ Product Not Found";
+
+    }
 
 }

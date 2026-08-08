@@ -128,11 +128,8 @@ const product = {
     status: cols[5].trim(),
 
     voiceKeywords: cols[6]
-        ? cols[6]
-            .toLowerCase()
-            .split(",")
-            .map(k => k.trim())
-        : [],
+    ? cols[6].toLowerCase().split("|").map(k => k.trim())
+    : [],
 
     qty: 0
 

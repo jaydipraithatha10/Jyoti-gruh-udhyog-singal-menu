@@ -808,4 +808,80 @@ function findVoiceProduct(voiceText){
 
     }
 
+/* ===========================
+   SMART PRODUCT ALIAS
+=========================== */
+
+const aliases = {
+
+    "farali chakri": [
+        "chakri",
+        "ચકરી",
+        "farali chakri"
+    ],
+
+    "farali bhakharwadi": [
+        "bhakharwadi",
+        "ભાખરવડી",
+        "bhakarwadi"
+    ],
+
+    "farali ghughra": [
+        "ghughra",
+        "ઘૂઘરા"
+    ],
+
+    "farali white spring": [
+        "white spring",
+        "spring",
+        "સપ્રિંગ"
+    ],
+
+    "farali white ball": [
+        "white ball",
+        "ball",
+        "વ્હાઇટ બોલ"
+    ],
+
+    "rajgira khajur": [
+        "rajgira",
+        "khajur",
+        "રાજગીરા"
+    ],
+
+    "banana wafer": [
+        "banana wafer",
+        "wafer",
+        "વેફર"
+    ],
+
+    "khakhra": [
+        "khakhra",
+        "ખાખરા"
+    ]
+
+};
+
+for (const key in aliases) {
+
+    if (found) break;
+
+    if (product.name.toLowerCase().includes(key)) {
+
+        for (const word of aliases[key]) {
+
+            if (voiceText.includes(word.toLowerCase())) {
+
+                found = product;
+
+                break;
+
+            }
+
+        }
+
+    }
+
+}
+
 }

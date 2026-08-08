@@ -776,100 +776,55 @@ function processVoiceOrder(text){
 
 function findVoiceProduct(text){
 
-    text = text
-    .toLowerCase()
-    .trim();
+    text = text.toLowerCase().trim();
 
     let qty = 1;
 
-    const number =
-    text.match(/\d+/);
+    const match = text.match(/\d+/);
 
-    if(number){
-
-        qty =
-        parseInt(number[0]);
-
+    if(match){
+        qty = parseInt(match[0]);
     }
 
     text = text
-    .replace(/\d+/g,"")
-    .replace(/add|order|packet|pack|gm|gram|grams|qty|quantity/gi,"")
-    .trim();
+        .replace(/\d+/g,"")
+        .replace(/packet|pack|gm|gram|grams|add|order/gi,"")
+        .trim();
 
     for(const category of menu){
 
         for(const product of category.products){
 
-            if(product.voiceKeywords){
+            if(!product.voiceKeywords) continue;
 
-            const ok = product.voiceKeywords.some(keyword => {
+            const matched = product.voiceKeywords.some(keyword => {
 
-    keyword = keyword.toLowerCase().trim();
+                keyword = keyword.toLowerCase().trim();
 
-    return text === keyword;
+                return keyword === text;
 
-});    
+            });
 
+            if(matched){
 
-if(!ok){
+                product.qty += qty;
 
-    const words = text.split(/\s+/);
+                updateCart();
 
-    const partial = words.some(word =>
+                renderMenu(searchInput.value);
 
-        word.length > 2 &&
+                voiceResult.innerHTML =
+                    "✅ " + product.name + " × " + qty;
 
-        product.voiceKeywords.some(k =>
-
-            k.includes(word)
-
-        )
-
-    );
-
-    if(partial){
-
-        product.qty += qty;
-
-        updateCart();
-
-        renderMenu(searchInput.value);
-
-        voiceResult.innerHTML =
-            "✅ " +
-            product.name +
-            " × " +
-            qty;
-
-        return true;
-
-    }
-
-}
-                if(ok){
-
-                    product.qty += qty;
-
-                    updateCart();
-
-                    renderMenu(searchInput.value);
-
-                    voiceResult.innerHTML =
-                    "✅ " +
-                    product.name +
-                    " × " +
-                    qty;
-
-                    return true;
-
-                }
+                return true;
 
             }
 
         }
 
     }
+
+    voiceResult.innerHTML = "❌ Product Not Found";
 
     return false;
 

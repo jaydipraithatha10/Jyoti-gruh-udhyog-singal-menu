@@ -683,10 +683,10 @@ encodeURIComponent(message),
 });
 
 /* ===========================
-   VOICE SEARCH
+   VOICE ORDER V7
 =========================== */
 
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
 
     const SpeechRecognition =
         window.SpeechRecognition ||
@@ -697,6 +697,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     recognition.lang = "en-IN";
     recognition.continuous = false;
     recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
     voiceBtn.addEventListener("click", () => {
 
@@ -704,14 +705,13 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 
         voiceBtn.classList.add("listening");
 
-        voiceResult.innerHTML = "🎤 Listening...";
+        voiceResult.innerHTML = "🎤 બોલો...";
 
     });
 
     recognition.onresult = function (event) {
 
-        const text =
-            event.results[0][0].transcript
+        const text = event.results[0][0].transcript
             .toLowerCase()
             .trim();
 
@@ -724,21 +724,17 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         voiceBtn.classList.remove("listening");
 
     };
-
 }
 
 /* ===========================
-   VOICE ORDER
+   PROCESS VOICE
 =========================== */
 
 function processVoiceOrder(text){
 
     voiceResult.innerHTML = "🎤 " + text;
 
-    if(
-        text.includes("order") ||
-        text.includes("ઓર્ડર")
-    ){
+    if(text.includes("order") || text.includes("ઓર્ડર")){
 
         document.getElementById("orderBtn").click();
 
@@ -748,9 +744,9 @@ function processVoiceOrder(text){
 
     searchInput.value = text;
 
-renderMenu(text);
+    renderMenu(text);
 
-findVoiceProduct(text);
+    findVoiceProduct(text);
 
 }
 
@@ -758,37 +754,58 @@ findVoiceProduct(text);
    SMART VOICE MATCH
 =========================== */
 
-function findVoiceProduct(voiceText) {
+function findVoiceProduct(voiceText){
+
     voiceText = voiceText.toLowerCase().trim();
 
-    // Remove common words
     voiceText = voiceText
-        .replace(/add|order|please|pack|packet|kg|gm|grams|gram|piece|pcs|qty|quantity/gi, "")
+        .replace(/add|order|please|pack|packet|kg|gm|grams|gram|piece|pcs|qty|quantity/gi,"")
         .trim();
 
     let found = null;
 
-    for (const product of products) {
+    menu.forEach(category=>{
 
-        const productName = product.name.toLowerCase();
+        category.products.forEach(product=>{
 
-        // Direct match
-        if (
-            productName.includes(voiceText) ||
-            voiceText.includes(productName)
-        ) {
-            found = product;
-            break;
-        }
+            if(found) return;
 
-        // Word by word match
-        const words = voiceText.split(/\s+/);
+            const name = product.name.toLowerCase();
 
-        if (words.some(word => word.length > 2 && productName.includes(word))) {
-            found = product;
-            break;
-        }
+            if(
+                name.includes(voiceText) ||
+                voiceText.includes(name)
+            ){
+                found = product;
+                return;
+            }
+
+            const words = voiceText.split(/\s+/);
+
+            if(words.some(word => word.length > 2 && name.includes(word))){
+                found = product;
+            }
+
+        });
+
+    });
+
+    if(found){
+
+        found.qty++;
+
+        updateCart();
+
+        renderMenu(searchInput.value);
+
+        voiceResult.innerHTML =
+            "✅ " + found.name + " Added";
+
+    }else{
+
+        voiceResult.innerHTML =
+            "❌ Product Not Found";
+
     }
 
-    return found;
 }

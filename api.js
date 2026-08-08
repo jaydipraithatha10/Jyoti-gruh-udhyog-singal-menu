@@ -711,6 +711,24 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
 }
 
 
+/* ===========================
+   PROCESS VOICE SEARCH
+=========================== */
+
+function processVoiceSearch(text){
+
+    voiceResult.innerHTML = "🎤 " + text;
+
+    text = text.toLowerCase().trim();
+
+    // Search box માં લખો
+    searchInput.value = text;
+
+    // Product filter કરો
+    renderMenu(text);
+
+}
+
     /* CLEAR CART */
 
     menu.forEach(category=>{

@@ -765,3 +765,83 @@ function processVoiceOrder(text){
     renderMenu(text);
 
 }
+
+/* ===========================
+   FIND PRODUCT
+=========================== */
+
+function findVoiceProduct(text){
+
+    text = text.toLowerCase().trim();
+
+    let qty = 1;
+
+    const num = text.match(/\d+/);
+
+    if(num){
+        qty = parseInt(num[0]);
+    }
+
+    text = text
+        .replace(/\d+/g,"")
+        .replace(/packet|pack|gm|gram|grams|add|order|please/gi,"")
+        .trim();
+
+    let bestProduct = null;
+    let bestScore = -1;
+
+    menu.forEach(category => {
+
+        category.products.forEach(product => {
+
+            if(!product.voiceKeywords) return;
+
+            product.voiceKeywords.forEach(keyword => {
+
+                keyword = keyword.toLowerCase().trim();
+
+                let score = -1;
+
+                if(text === keyword){
+
+                    score = 1000;
+
+                }else if(text.includes(keyword)){
+
+                    score = keyword.length;
+
+                }
+
+                if(score > bestScore){
+
+                    bestScore = score;
+                    bestProduct = product;
+
+                }
+
+            });
+
+        });
+
+    });
+
+    if(bestProduct){
+
+        bestProduct.qty += qty;
+
+        updateCart();
+
+        renderMenu(searchInput.value);
+
+        voiceResult.innerHTML =
+            "✅ " + bestProduct.name + " × " + qty;
+
+        return true;
+
+    }
+
+    voiceResult.innerHTML = "❌ Product Not Found";
+
+    return false;
+
+}

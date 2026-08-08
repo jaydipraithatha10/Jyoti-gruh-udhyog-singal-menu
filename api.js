@@ -388,16 +388,10 @@ function(){
 
 function changeQty(categoryName, productName, change){
 
-    const category = menu.find(
-        c => c.category === categoryName
-    );
-
+    const category = menu.find(c => c.category === categoryName);
     if(!category) return;
 
-    const product = category.products.find(
-        p => p.name === productName
-    );
-
+    const product = category.products.find(p => p.name === productName);
     if(!product) return;
 
     product.qty += change;
@@ -406,9 +400,23 @@ function changeQty(categoryName, productName, change){
         product.qty = 0;
     }
 
-    updateCart();
+    // માત્ર આ Product ની Qty Update કરો
+    const buttons = document.querySelectorAll(".product-row");
 
-    renderMenu(searchInput.value);
+    buttons.forEach(row => {
+
+        const name = row.querySelector(".product-name");
+
+        if(name && name.innerText.trim() === productName){
+
+            row.querySelector(".qty").innerText = product.qty;
+
+        }
+
+    });
+
+    // Cart Update
+    updateCart();
 
 }
 

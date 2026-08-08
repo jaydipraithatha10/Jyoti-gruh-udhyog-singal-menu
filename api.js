@@ -729,6 +729,40 @@ function processVoiceSearch(text){
 
 }
 
+/* ===========================
+   SMART VOICE SEARCH
+=========================== */
+
+function normalizeVoice(text){
+
+    text = text.toLowerCase();
+
+    text = text
+        .replace(/naylon/g,"nylon")
+        .replace(/nylon/g,"naylon")
+        .replace(/lasen/g,"lasan")
+        .replace(/juvar/g,"juwar")
+        .replace(/jowar/g,"juwar")
+        .replace(/bajra/g,"bajri")
+        .replace(/packet|pack|gm|gram|grams|please|show|search/gi,"")
+        .trim();
+
+    return text;
+
+}
+
+function processVoiceSearch(text){
+
+    text = normalizeVoice(text);
+
+    voiceResult.innerHTML = "🎤 " + text;
+
+    searchInput.value = text;
+
+    renderMenu(text);
+
+}
+
     /* CLEAR CART */
 
     menu.forEach(category=>{

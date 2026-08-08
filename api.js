@@ -554,6 +554,8 @@ if (voiceBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in w
         voiceResult.innerHTML =
             "🎤 " + text;
 
+console.log("VOICE =", text);
+alert(text);
         processVoiceOrder(text);
 
     };

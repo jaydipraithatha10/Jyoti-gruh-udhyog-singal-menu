@@ -259,8 +259,8 @@ function renderMenu(search = ""){
         </h2>
 
         <div
-        id="cat-${category.category}">
-
+        
+<div id="cat-${category.category}" style="display:none;">
         `;
 
         products.forEach(product=>{

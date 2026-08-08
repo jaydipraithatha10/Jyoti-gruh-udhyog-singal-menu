@@ -797,13 +797,49 @@ function findVoiceProduct(text){
 
             if(!product.voiceKeywords) continue;
 
-            const matched = product.voiceKeywords.some(keyword => {
+            let bestProduct = null;
+let bestScore = 0;
 
-                keyword = keyword.toLowerCase().trim();
+for (const category of menu) {
 
-                return keyword === text;
+    for (const product of category.products) {
 
-            });
+        if (!product.voiceKeywords) continue;
+
+        for (const keyword of product.voiceKeywords) {
+
+            const k = keyword.toLowerCase().trim();
+
+            if (text.includes(k) && k.length > bestScore) {
+
+                bestScore = k.length;
+                bestProduct = product;
+
+            }
+
+        }
+
+    }
+
+}
+
+if (bestProduct) {
+
+    bestProduct.qty += qty;
+
+    updateCart();
+
+    renderMenu(searchInput.value);
+
+    voiceResult.innerHTML =
+        "✅ " + bestProduct.name + " × " + qty;
+
+    return true;
+
+}
+
+voiceResult.innerHTML = "❌ Product Not Found";
+return false;
 
             if(matched){
 

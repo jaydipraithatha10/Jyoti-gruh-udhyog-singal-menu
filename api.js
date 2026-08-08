@@ -599,6 +599,24 @@ encodeURIComponent(message),
 
 );
 
+/* CLEAR CART */
+
+menu.forEach(category=>{
+
+    category.products.forEach(product=>{
+
+        product.qty = 0;
+
+    });
+
+});
+
+updateCart();
+
+renderMenu();
+
+});
+
 
 /* ===========================
    VOICE SEARCH

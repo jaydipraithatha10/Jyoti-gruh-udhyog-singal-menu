@@ -467,30 +467,25 @@ function updateCart(){
    CATEGORY COLLAPSE
 =========================== */
 
+
 function toggleCategory(category){
 
-    // બધા category બંધ કરો
-    document.querySelectorAll('[id^="cat-"]').forEach(box=>{
-        box.style.display = "none";
-    });
-
-    document.querySelectorAll('[id^="icon-"]').forEach(icon=>{
-        icon.innerHTML = "▶";
-    });
-
-    // જે category પર click કર્યું તે open કરો
     const box = document.getElementById("cat-" + category);
     const icon = document.getElementById("icon-" + category);
 
-    if(box){
+    if(box.style.display === "none"){
 
         box.style.display = "block";
         icon.innerHTML = "▼";
 
+    }else{
+
+        box.style.display = "none";
+        icon.innerHTML = "▶";
+
     }
 
 }
-
 /* ===========================
    REVIEW
 =========================== */

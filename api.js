@@ -806,11 +806,55 @@ function findVoiceProduct(text){
 
             if(product.voiceKeywords){
 
-                const ok =
-                product.voiceKeywords.some(k=>
-                    text.includes(k)
-                );
+                
+const ok = product.voiceKeywords.some(keyword => {
 
+    keyword = keyword
+        .toLowerCase()
+        .trim();
+
+    return (
+        text.includes(keyword) ||
+        keyword.includes(text)
+    );
+
+});
+
+if(!ok){
+
+    const words = text.split(/\s+/);
+
+    const partial = words.some(word =>
+
+        word.length > 2 &&
+
+        product.voiceKeywords.some(k =>
+
+            k.includes(word)
+
+        )
+
+    );
+
+    if(partial){
+
+        product.qty += qty;
+
+        updateCart();
+
+        renderMenu(searchInput.value);
+
+        voiceResult.innerHTML =
+            "✅ " +
+            product.name +
+            " × " +
+            qty;
+
+        return true;
+
+    }
+
+}
                 if(ok){
 
                     product.qty += qty;

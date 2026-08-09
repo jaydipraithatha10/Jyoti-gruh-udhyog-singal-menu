@@ -622,7 +622,6 @@ function updateCart(){
 /* ===========================
    CATEGORY COLLAPSE
 =========================== */
-
 function toggleCategory(category){
 
     const box =
@@ -652,6 +651,7 @@ function toggleCategory(category){
     }
 
 }
+
 /* ===========================
    REVIEW
 =========================== */

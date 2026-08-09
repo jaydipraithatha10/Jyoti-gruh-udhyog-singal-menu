@@ -158,6 +158,8 @@ const product = {
         categoryMap[cat]
 
     }));
+     
+    restoreCart();
 
     loader.style.display = "none";
 
@@ -526,12 +528,15 @@ function changeQty(
 
     product.qty += change;
 
+if(product.qty < 0){
+    product.qty = 0;
+}
 
-    if(product.qty < 0){
+saveCart();
 
-        product.qty = 0;
+updateCart();
 
-    }
+renderMenu(searchInput.value);
 
 
     /* ===========================

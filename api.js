@@ -768,6 +768,8 @@ menu.forEach(category=>{
 
 });
 
+
+localStorage.removeItem("jyotiCart");
 updateCart();
 
 renderMenu();

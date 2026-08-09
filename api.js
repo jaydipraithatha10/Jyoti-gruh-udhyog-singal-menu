@@ -280,12 +280,11 @@ function renderMenu(search = ""){
         >
 
             <span>
-
+               
                 <span
-                    id="icon-${category.category}"
-                >
-                    ▶
-                </span>
+id="icon-${category.category}">
+${openCategories[category.category] === false ? "▶" : "▼"}
+</span>
 
                 ${category.category}
 
@@ -298,12 +297,12 @@ function renderMenu(search = ""){
             </span>
 
         </h2>
-
-
+         
         <div
-            id="cat-${category.category}"
-            style="display:none;"
-        >
+id="cat-${category.category}"
+style="display:${openCategories[category.category] === false ? "none" : "block"}">
+
+        
         `;
 
 

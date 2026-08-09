@@ -1,6 +1,6 @@
 /* ===========================
    JYOTI GRUH UDHYOG
-   API.JS V7
+   API.JS V7 FINAL
 =========================== */
 
 /* ===========================
@@ -12,35 +12,37 @@ const SHEET_URL =
 
 
 /* ===========================
-   GLOBALS
+   GLOBAL VARIABLES
 =========================== */
 
 let menu = [];
 
 /*
-   false = category closed
-   true  = category open
+   Category open / close state
+
+   true  = open
+   false = closed
 */
 let openCategories = {};
 
 
 const menuContainer =
-document.getElementById("menuContainer");
+    document.getElementById("menuContainer");
 
 const searchInput =
-document.getElementById("searchInput");
+    document.getElementById("searchInput");
 
 const loader =
-document.getElementById("loader");
+    document.getElementById("loader");
 
 const cartBar =
-document.getElementById("cartBar");
+    document.getElementById("cartBar");
 
 const cartItems =
-document.getElementById("cartItems");
+    document.getElementById("cartItems");
 
 const cartTotal =
-document.getElementById("cartTotal");
+    document.getElementById("cartTotal");
 
 
 /* ===========================
@@ -51,21 +53,39 @@ async function loadProducts(){
 
     try{
 
-        loader.style.display = "flex";
+        if(loader){
+
+            loader.style.display = "flex";
+
+        }
 
         const response =
-        await fetch(SHEET_URL);
+            await fetch(SHEET_URL, {
+                cache: "no-store"
+            });
+
 
         if(!response.ok){
 
             throw new Error(
-                "Google Sheet Error"
+                "Google Sheet could not be loaded"
             );
 
         }
 
+
         const csv =
-        await response.text();
+            await response.text();
+
+
+        if(!csv.trim()){
+
+            throw new Error(
+                "Google Sheet is empty"
+            );
+
+        }
+
 
         buildMenu(csv);
 
@@ -73,29 +93,41 @@ async function loadProducts(){
 
     catch(error){
 
-    console.error("JYOTI ERROR:", error);
+        console.error(
+            "Jyoti Products Error:",
+            error
+        );
 
-    loader.style.display = "none";
 
-    menuContainer.innerHTML = `
+        if(loader){
 
-        <div class="no-products">
+            loader.style.display = "none";
 
-            ⚠️<br><br>
+        }
 
-            Products Loading Failed
 
-            <br><br>
+        if(menuContainer){
 
-            <small>
-                ${error.message}
-            </small>
+            menuContainer.innerHTML = `
 
-        </div>
+                <div class="no-products">
 
-    `;
+                    ⚠️
+
+                    <br><br>
+
+                    Products Loading Failed
+
+                </div>
+
+            `;
+
+        }
+
+    }
 
 }
+
 
 /* ===========================
    BUILD MENU
@@ -106,35 +138,46 @@ function buildMenu(csv){
     const rows =
         csv.trim().split(/\r?\n/);
 
+
     if(rows.length <= 1){
 
         throw new Error(
-            "No products found in Google Sheet"
+            "No product rows found"
         );
 
     }
 
+
+    /*
+       Remove Header Row
+    */
+
     rows.shift();
+
 
     const categoryMap = {};
 
 
     rows.forEach(row => {
 
+        /*
+           Basic CSV split
+
+           Your current Google Sheet
+           uses normal values without
+           commas inside fields.
+        */
+
         const cols =
             row.split(",");
 
 
         /*
-           Minimum columns:
+           IMPORTANT
 
-           0 = ID
-           1 = Category
-           2 = Product
-           3 = Weight
-           4 = Price
-           5 = Status
-           6 = Voice Keywords (optional)
+           6 columns are enough.
+
+           7th column is optional.
         */
 
         if(cols.length < 6){
@@ -145,30 +188,62 @@ function buildMenu(csv){
 
 
         const category =
-            cols[1].trim();
+            cols[1]
+                .trim();
+
+
+        const name =
+            cols[2]
+                .trim();
+
+
+        const weight =
+            cols[3]
+                .trim();
+
+
+        const price =
+            Number(
+                cols[4]
+                    .trim()
+            );
+
+
+        const status =
+            cols[5]
+                .trim();
+
+
+        /*
+           Optional Voice Keywords
+
+           Not required.
+        */
+
+        const voiceKeywords =
+            cols[6]
+            ? cols[6]
+                .toLowerCase()
+                .split("|")
+                .map(k => k.trim())
+                .filter(Boolean)
+            : [];
 
 
         const product = {
 
-            name:
-                cols[2].trim(),
+            name: name,
 
-            weight:
-                cols[3].trim(),
+            weight: weight,
 
-            price:
-                Number(cols[4]),
+            price: isNaN(price)
+                ? 0
+                : price,
 
-            status:
-                cols[5].trim(),
+            status: status,
 
             voiceKeywords:
-                cols[6]
-                ? cols[6]
-                    .toLowerCase()
-                    .split("|")
-                    .map(k => k.trim())
-                : [],
+                voiceKeywords,
 
             qty: 0
 
@@ -176,7 +251,7 @@ function buildMenu(csv){
 
 
         /*
-           Only Active Products
+           Only Active products
         */
 
         if(
@@ -203,6 +278,10 @@ function buildMenu(csv){
     });
 
 
+    /*
+       Convert object to menu array
+    */
+
     menu =
         Object.keys(categoryMap)
         .map(category => ({
@@ -216,26 +295,33 @@ function buildMenu(csv){
 
 
     /*
-       Restore Cart BEFORE render
+       Restore saved cart
     */
 
     restoreCart();
 
 
     /*
-       Loader hide
+       Hide loader
     */
 
-    loader.style.display = "none";
+    if(loader){
+
+        loader.style.display = "none";
+
+    }
 
 
     /*
-       First display:
-       ALL categories CLOSED
+       Render products
     */
 
     renderMenu();
 
+
+    /*
+       Update cart
+    */
 
     updateCart();
 
@@ -255,14 +341,23 @@ loadProducts();
 
 function renderMenu(search = ""){
 
+    if(!menuContainer){
+
+        return;
+
+    }
+
+
     menuContainer.innerHTML = "";
+
 
     let totalProducts = 0;
 
+
     const keyword =
         search
-        .toLowerCase()
-        .trim();
+            .toLowerCase()
+            .trim();
 
 
     menu.forEach(category => {
@@ -273,35 +368,37 @@ function renderMenu(search = ""){
         =========================== */
 
         const filteredProducts =
-            category.products.filter(product => {
+            category.products.filter(
+                product => {
 
-                return (
+                    return (
 
-                    product.name
-                        .toLowerCase()
-                        .includes(keyword)
+                        product.name
+                            .toLowerCase()
+                            .includes(keyword)
 
-                    ||
+                        ||
 
-                    category.category
-                        .toLowerCase()
-                        .includes(keyword)
+                        category.category
+                            .toLowerCase()
+                            .includes(keyword)
 
-                    ||
+                        ||
 
-                    product.weight
-                        .toLowerCase()
-                        .includes(keyword)
+                        product.weight
+                            .toLowerCase()
+                            .includes(keyword)
 
-                    ||
+                        ||
 
-                    product.price
-                        .toString()
-                        .includes(keyword)
+                        product.price
+                            .toString()
+                            .includes(keyword)
 
-                );
+                    );
 
-            });
+                }
+            );
 
 
         if(
@@ -320,26 +417,28 @@ function renderMenu(search = ""){
         const grouped = {};
 
 
-        filteredProducts.forEach(product => {
+        filteredProducts.forEach(
+            product => {
 
-            const key =
-                product.name
-                    .toLowerCase()
-                    .trim();
+                const key =
+                    product.name
+                        .toLowerCase()
+                        .trim();
 
 
-            if(!grouped[key]){
+                if(!grouped[key]){
 
-                grouped[key] = [];
+                    grouped[key] = [];
+
+                }
+
+
+                grouped[key].push(
+                    product
+                );
 
             }
-
-
-            grouped[key].push(
-                product
-            );
-
-        });
+        );
 
 
         const productGroups =
@@ -351,22 +450,8 @@ function renderMenu(search = ""){
 
 
         /* ===========================
-           CATEGORY
+           CATEGORY STATE
         =========================== */
-
-        const section =
-            document.createElement("section");
-
-        section.className =
-            "category";
-
-
-        /*
-           IMPORTANT
-
-           Only category explicitly opened
-           by customer will be open.
-        */
 
         const isOpen =
             openCategories[
@@ -374,28 +459,50 @@ function renderMenu(search = ""){
             ] === true;
 
 
+        const section =
+            document.createElement(
+                "section"
+            );
+
+
+        section.className =
+            "category";
+
+
         let html = `
 
             <h2
                 class="category-title"
-                onclick="toggleCategory('${escapeHtml(category.category)}')"
+                onclick="toggleCategory(
+                    '${escapeHTML(category.category)}'
+                )"
             >
 
                 <span>
 
                     <span
-                        id="icon-${escapeHtml(category.category)}"
+                        id="icon-${escapeHTML(
+                            category.category
+                        )}"
                     >
 
-                        ${isOpen ? "▼" : "▶"}
+                        ${isOpen
+                            ? "▼"
+                            : "▶"
+                        }
 
                     </span>
 
-                    ${escapeHtml(category.category)}
+                    ${escapeHTML(
+                        category.category
+                    )}
 
                 </span>
 
-                <span class="category-count">
+
+                <span
+                    class="category-count"
+                >
 
                     (${productGroups.length})
 
@@ -405,9 +512,16 @@ function renderMenu(search = ""){
 
 
             <div
-                id="cat-${escapeHtml(category.category)}"
+                id="cat-${escapeHTML(
+                    category.category
+                )}"
+
                 style="
-                    display:${isOpen ? "block" : "none"};
+                    display:
+                    ${isOpen
+                        ? "block"
+                        : "none"
+                    };
                 "
             >
 
@@ -418,119 +532,155 @@ function renderMenu(search = ""){
            PRODUCT GROUP
         =========================== */
 
-        productGroups.forEach(products => {
+        productGroups.forEach(
+            products => {
 
+                const firstProduct =
+                    products[0];
 
-            const firstProduct =
-                products[0];
-
-
-            html += `
-
-                <div class="product-row">
-
-                    <div class="product-name">
-
-                        ${escapeHtml(
-                            firstProduct.name
-                        )}
-
-                    </div>
-
-            `;
-
-
-            /* ===========================
-               WEIGHT / PRICE
-            =========================== */
-
-            products.forEach(product => {
 
                 html += `
 
                     <div
-                        class="product-option"
-
-                        data-product-name="${escapeHtml(
-                            product.name
-                        )}"
-
-                        data-weight="${escapeHtml(
-                            product.weight
-                        )}"
+                        class="product-row"
                     >
 
-                        <div class="product-info">
+                        <div
+                            class="product-name"
+                        >
 
-                            ${escapeHtml(
-                                product.weight
+                            ${escapeHTML(
+                                firstProduct.name
                             )}
 
-                            &nbsp; • &nbsp;
-
-                            ₹${product.price}
-
                         </div>
 
+                `;
 
-                        <div class="qty-box">
 
-                            <button
-                                type="button"
-                                class="qty-btn"
+                /*
+                   250 gm / 500 gm
+                   options
+                */
 
-                                onclick="event.stopPropagation(); changeQty(
-                                    '${escapeHtml(category.category)}',
-                                    '${escapeHtml(product.name)}',
-                                    '${escapeHtml(product.weight)}',
-                                    -1
-                                )"
+                products.forEach(
+                    product => {
+
+                        html += `
+
+                            <div
+                                class="product-option"
+
+                                data-product-name="${escapeHTML(
+                                    product.name
+                                )}"
+
+                                data-weight="${escapeHTML(
+                                    product.weight
+                                )}"
                             >
 
-                                −
+                                <div
+                                    class="product-info"
+                                >
 
-                            </button>
+                                    ${escapeHTML(
+                                        product.weight
+                                    )}
+
+                                    &nbsp; • &nbsp;
+
+                                    ₹${product.price}
+
+                                </div>
 
 
-                            <span class="qty">
+                                <div
+                                    class="qty-box"
+                                >
 
-                                ${product.qty}
+                                    <button
+                                        type="button"
 
-                            </span>
+                                        class="qty-btn"
+
+                                        onclick="
+                                            event.stopPropagation();
+
+                                            changeQty(
+                                                '${escapeHTML(
+                                                    category.category
+                                                )}',
+                                                '${escapeHTML(
+                                                    product.name
+                                                )}',
+                                                '${escapeHTML(
+                                                    product.weight
+                                                )}',
+                                                -1
+                                            );
+                                        "
+                                    >
+
+                                        −
+
+                                    </button>
 
 
-                            <button
-                                type="button"
-                                class="qty-btn"
+                                    <span
+                                        class="qty"
+                                    >
 
-                                onclick="event.stopPropagation(); changeQty(
-                                    '${escapeHtml(category.category)}',
-                                    '${escapeHtml(product.name)}',
-                                    '${escapeHtml(product.weight)}',
-                                    1
-                                )"
-                            >
+                                        ${product.qty}
 
-                                +
+                                    </span>
 
-                            </button>
 
-                        </div>
+                                    <button
+                                        type="button"
+
+                                        class="qty-btn"
+
+                                        onclick="
+                                            event.stopPropagation();
+
+                                            changeQty(
+                                                '${escapeHTML(
+                                                    category.category
+                                                )}',
+                                                '${escapeHTML(
+                                                    product.name
+                                                )}',
+                                                '${escapeHTML(
+                                                    product.weight
+                                                )}',
+                                                1
+                                            );
+                                        "
+                                    >
+
+                                        +
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                );
+
+
+                html += `
 
                     </div>
 
                 `;
 
-            });
-
-
-            html += `
-
-                </div>
-
-            `;
-
-        });
+            }
+        );
 
 
         html += `
@@ -577,7 +727,9 @@ function renderMenu(search = ""){
 
         menuContainer.innerHTML = `
 
-            <div class="no-products">
+            <div
+                class="no-products"
+            >
 
                 🔍
 
@@ -598,15 +750,19 @@ function renderMenu(search = ""){
    ESCAPE HTML
 =========================== */
 
-function escapeHtml(value){
+function escapeHTML(value){
 
     return String(value)
 
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
 
 }
 
@@ -683,33 +839,31 @@ function changeQty(
 
 
     /*
-       Save Cart
+       Save cart
     */
 
     saveCart();
 
 
     /*
-       Update Cart
+       Update cart
     */
 
     updateCart();
 
 
     /*
-       IMPORTANT
+       Re-render
 
-       Do NOT close category.
-
-       renderMenu() reads
-       openCategories and keeps
-       the category open.
+       Category remains open
+       because openCategories
+       is preserved.
     */
 
     renderMenu(
         searchInput
-        ? searchInput.value
-        : ""
+            ? searchInput.value
+            : ""
     );
 
 }
@@ -726,24 +880,28 @@ function updateCart(){
     let totalPrice = 0;
 
 
-    menu.forEach(category => {
+    menu.forEach(
+        category => {
 
-        category.products.forEach(product => {
+            category.products.forEach(
+                product => {
 
-            if(product.qty > 0){
+                    if(product.qty > 0){
 
-                totalItems +=
-                    product.qty;
+                        totalItems +=
+                            product.qty;
 
-                totalPrice +=
-                    product.qty *
-                    product.price;
+                        totalPrice +=
+                            product.qty *
+                            product.price;
 
-            }
+                    }
 
-        });
+                }
+            );
 
-    });
+        }
+    );
 
 
     if(cartItems){
@@ -766,8 +924,8 @@ function updateCart(){
 
         cartBar.style.display =
             totalItems > 0
-            ? "flex"
-            : "none";
+                ? "flex"
+                : "none";
 
     }
 
@@ -775,15 +933,18 @@ function updateCart(){
 
 
 /* ===========================
-   CATEGORY COLLAPSE
+   CATEGORY OPEN / CLOSE
 =========================== */
 
-function toggleCategory(category){
+function toggleCategory(
+    category
+){
 
     const box =
         document.getElementById(
             "cat-" + category
         );
+
 
     const icon =
         document.getElementById(
@@ -809,12 +970,14 @@ function toggleCategory(category){
         box.style.display =
             "block";
 
+
         if(icon){
 
             icon.innerHTML =
                 "▼";
 
         }
+
 
         openCategories[
             category
@@ -830,12 +993,14 @@ function toggleCategory(category){
         box.style.display =
             "none";
 
+
         if(icon){
 
             icon.innerHTML =
                 "▶";
 
         }
+
 
         openCategories[
             category
@@ -865,7 +1030,9 @@ ${review}
 
         "https://wa.me/919712149344?text=" +
 
-        encodeURIComponent(message),
+        encodeURIComponent(
+            message
+        ),
 
         "_blank"
 
@@ -897,53 +1064,63 @@ if(orderBtn){
                 "🛒 *Jyoti Gruh Udhyog*\n\n";
 
 
-            menu.forEach(category => {
+            menu.forEach(
+                category => {
 
-                let found = false;
+                    let found = false;
 
 
-                category.products.forEach(product => {
+                    category.products.forEach(
+                        product => {
 
-                    if(product.qty > 0){
+                            if(
+                                product.qty > 0
+                            ){
 
-                        if(!found){
+                                if(!found){
 
-                            message +=
-                                "\n📦 *" +
-                                category.category +
-                                "*\n";
+                                    message +=
+                                        "\n📦 *" +
+                                        category.category +
+                                        "*\n";
 
-                            found = true;
+                                    found = true;
+
+                                }
+
+
+                                const amount =
+                                    product.qty *
+                                    product.price;
+
+
+                                total +=
+                                    amount;
+
+
+                                message +=
+                                    "• " +
+                                    product.name +
+                                    "\n" +
+
+                                    product.weight +
+                                    " × " +
+
+                                    product.qty +
+
+                                    " = ₹" +
+
+                                    amount +
+
+                                    "\n";
+
+                            }
 
                         }
+                    );
 
-
-                        const amount =
-                            product.qty *
-                            product.price;
-
-
-                        total +=
-                            amount;
-
-
-                        message +=
-                            "• " +
-                            product.name +
-                            "\n" +
-
-                            product.weight +
-                            " × " +
-                            product.qty +
-                            " = ₹" +
-                            amount +
-                            "\n";
-
-                    }
-
-                });
-
-            });
+                }
+            );
 
 
             if(total === 0){
@@ -967,7 +1144,7 @@ if(orderBtn){
 
 
             /*
-               Open WhatsApp
+               WhatsApp
             */
 
             window.open(
@@ -987,15 +1164,19 @@ if(orderBtn){
                CLEAR CART
             */
 
-            menu.forEach(category => {
+            menu.forEach(
+                category => {
 
-                category.products.forEach(product => {
+                    category.products.forEach(
+                        product => {
 
-                    product.qty = 0;
+                            product.qty = 0;
 
-                });
+                        }
+                    );
 
-            });
+                }
+            );
 
 
             localStorage.removeItem(
@@ -1031,40 +1212,48 @@ function saveCart(){
     const cart = [];
 
 
-    menu.forEach(category => {
+    menu.forEach(
+        category => {
 
-        category.products.forEach(product => {
+            category.products.forEach(
+                product => {
 
-            if(product.qty > 0){
+                    if(
+                        product.qty > 0
+                    ){
 
-                cart.push({
+                        cart.push({
 
-                    category:
-                        category.category,
+                            category:
+                                category.category,
 
-                    name:
-                        product.name,
+                            name:
+                                product.name,
 
-                    weight:
-                        product.weight,
+                            weight:
+                                product.weight,
 
-                    qty:
-                        product.qty
+                            qty:
+                                product.qty
 
-                });
+                        });
 
-            }
+                    }
 
-        });
+                }
+            );
 
-    });
+        }
+    );
 
 
     localStorage.setItem(
 
         "jyotiCart",
 
-        JSON.stringify(cart)
+        JSON.stringify(
+            cart
+        )
 
     );
 
@@ -1098,49 +1287,55 @@ function restoreCart(){
             );
 
 
-        if(!Array.isArray(cart)){
+        if(
+            !Array.isArray(cart)
+        ){
 
             return;
 
         }
 
 
-        cart.forEach(saved => {
+        cart.forEach(
+            saved => {
 
-            const category =
-                menu.find(
-                    c =>
-                        c.category ===
-                        saved.category
-                );
+                const category =
+                    menu.find(
+                        c =>
+                            c.category ===
+                            saved.category
+                    );
 
 
-            if(!category){
+                if(!category){
 
-                return;
+                    return;
+
+                }
+
+
+                const product =
+                    category.products.find(
+                        p =>
+                            p.name ===
+                                saved.name &&
+
+                            p.weight ===
+                                saved.weight
+                    );
+
+
+                if(product){
+
+                    product.qty =
+                        Number(
+                            saved.qty
+                        ) || 0;
+
+                }
 
             }
-
-
-            const product =
-                category.products.find(
-                    p =>
-                        p.name ===
-                            saved.name &&
-
-                        p.weight ===
-                            saved.weight
-                );
-
-
-            if(product){
-
-                product.qty =
-                    Number(saved.qty) || 0;
-
-            }
-
-        });
+        );
 
     }
 
@@ -1149,6 +1344,10 @@ function restoreCart(){
         console.error(
             "Cart Restore Error:",
             error
+        );
+
+        localStorage.removeItem(
+            "jyotiCart"
         );
 
     }

@@ -1,1 +1,19 @@
 
+{
+  "name": "Jyoti Gruh Udhyog",
+  "short_name": "Jyoti Gruh",
+  "description": "Jyoti Gruh Udhyog Product Menu",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8f3ec",
+  "theme_color": "#6B3F20",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any"
+    }
+  ]
+}

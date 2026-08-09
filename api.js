@@ -775,3 +775,82 @@ renderMenu();
 });
 
 
+/* ===========================
+   SAVE CART
+=========================== */
+
+function saveCart(){
+
+    const cart = [];
+
+    menu.forEach(category => {
+
+        category.products.forEach(product => {
+
+            if(product.qty > 0){
+
+                cart.push({
+
+                    category: category.category,
+
+                    name: product.name,
+
+                    weight: product.weight,
+
+                    qty: product.qty
+
+                });
+
+            }
+
+        });
+
+    });
+
+    localStorage.setItem(
+        "jyotiCart",
+        JSON.stringify(cart)
+    );
+
+}
+
+
+/* ===========================
+   RESTORE CART
+=========================== */
+
+function restoreCart(){
+
+    const savedCart =
+        localStorage.getItem("jyotiCart");
+
+    if(!savedCart) return;
+
+    const cart =
+        JSON.parse(savedCart);
+
+    cart.forEach(saved => {
+
+        const category =
+            menu.find(
+                c => c.category === saved.category
+            );
+
+        if(!category) return;
+
+        const product =
+            category.products.find(
+                p =>
+                    p.name === saved.name &&
+                    p.weight === saved.weight
+            );
+
+        if(product){
+
+            product.qty = saved.qty;
+
+        }
+
+    });
+
+}

@@ -628,21 +628,31 @@ function updateCart(){
    CATEGORY COLLAPSE
 =========================== */
 
-
 function toggleCategory(category){
 
-    const box = document.getElementById("cat-" + category);
-    const icon = document.getElementById("icon-" + category);
+    const box =
+        document.getElementById("cat-" + category);
+
+    const icon =
+        document.getElementById("icon-" + category);
+
+    if(!box) return;
 
     if(box.style.display === "none"){
 
         box.style.display = "block";
+
         icon.innerHTML = "▼";
+
+        openCategories[category] = true;
 
     }else{
 
         box.style.display = "none";
+
         icon.innerHTML = "▶";
+
+        openCategories[category] = false;
 
     }
 

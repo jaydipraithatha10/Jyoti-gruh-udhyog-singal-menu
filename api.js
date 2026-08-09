@@ -16,6 +16,7 @@ const SHEET_URL =
 
 let menu = [];
 
+let openCategories = {};
 const menuContainer =
 document.getElementById("menuContainer");
 

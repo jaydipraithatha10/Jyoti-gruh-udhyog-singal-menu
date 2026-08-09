@@ -1,22 +1,29 @@
 /* ===========================
    JYOTI GRUH UDHYOG
-   API.JS V6 - PART 1
+   API.JS V7
 =========================== */
 
 /* ===========================
-   GOOGLE SHEET URL
+   GOOGLE SHEET
 =========================== */
 
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vStfoYZJzDES0lAav3gzVi4hHMrr-g-vu6oHbAecwVN7-j5ZfyZCE4wy5qE8oaH0fSw14Y97pHMmUrU/pub?gid=1327834650&single=true&output=csv";
 
+
 /* ===========================
-   GLOBAL VARIABLES
+   GLOBALS
 =========================== */
 
 let menu = [];
 
+/*
+   false = category closed
+   true  = category open
+*/
 let openCategories = {};
+
+
 const menuContainer =
 document.getElementById("menuContainer");
 
@@ -35,11 +42,6 @@ document.getElementById("cartItems");
 const cartTotal =
 document.getElementById("cartTotal");
 
-const voiceBtn =
-document.getElementById("voiceBtn");
-
-const voiceResult =
-document.getElementById("voiceResult");
 
 /* ===========================
    LOAD PRODUCTS
@@ -71,7 +73,12 @@ async function loadProducts(){
 
     catch(error){
 
-        console.log(error);
+        console.error(
+            "Products Loading Error:",
+            error
+        );
+
+        loader.style.display = "none";
 
         menuContainer.innerHTML = `
 
@@ -91,6 +98,7 @@ async function loadProducts(){
 
 }
 
+
 /* ===========================
    BUILD MENU
 =========================== */
@@ -98,100 +106,532 @@ async function loadProducts(){
 function buildMenu(csv){
 
     const rows =
-    csv.trim().split("\n");
+        csv.trim().split(/\r?\n/);
+
+    if(rows.length <= 1){
+
+        throw new Error(
+            "No products found in Google Sheet"
+        );
+
+    }
 
     rows.shift();
 
     const categoryMap = {};
 
-    rows.forEach(row=>{
 
-        const cols = row.split(",");
+    rows.forEach(row => {
 
-        if(cols.length < 7){
+        const cols =
+            row.split(",");
+
+
+        /*
+           Minimum columns:
+
+           0 = ID
+           1 = Category
+           2 = Product
+           3 = Weight
+           4 = Price
+           5 = Status
+           6 = Voice Keywords (optional)
+        */
+
+        if(cols.length < 6){
 
             return;
 
         }
+
 
         const category =
-        cols[1].trim();
+            cols[1].trim();
 
-        
-const product = {
 
-    name: cols[2].trim(),
+        const product = {
 
-    weight: cols[3].trim(),
+            name:
+                cols[2].trim(),
 
-    price: Number(cols[4]),
+            weight:
+                cols[3].trim(),
 
-    status: cols[5].trim(),
+            price:
+                Number(cols[4]),
 
-    voiceKeywords: cols[6]
-    ? cols[6].toLowerCase().split("|").map(k => k.trim())
-    : [],
+            status:
+                cols[5].trim(),
 
-    qty: 0
+            voiceKeywords:
+                cols[6]
+                ? cols[6]
+                    .toLowerCase()
+                    .split("|")
+                    .map(k => k.trim())
+                : [],
 
-};
-        if(product.status !== "Active"){
+            qty: 0
+
+        };
+
+
+        /*
+           Only Active Products
+        */
+
+        if(
+            product.status
+                .toLowerCase() !== "active"
+        ){
 
             return;
 
         }
+
 
         if(!categoryMap[category]){
 
-            categoryMap[category]=[];
+            categoryMap[category] = [];
 
         }
 
-        categoryMap[category].push(product);
+
+        categoryMap[category].push(
+            product
+        );
 
     });
 
-    menu = Object.keys(categoryMap).map(cat=>({
 
-        category:cat,
+    menu =
+        Object.keys(categoryMap)
+        .map(category => ({
 
-        products:
-        categoryMap[cat]
+            category: category,
 
-    }));
-     
+            products:
+                categoryMap[category]
+
+        }));
+
+
+    /*
+       Restore Cart BEFORE render
+    */
+
     restoreCart();
+
+
+    /*
+       Loader hide
+    */
 
     loader.style.display = "none";
 
+
+    /*
+       First display:
+       ALL categories CLOSED
+    */
+
     renderMenu();
+
 
     updateCart();
 
 }
+
 
 /* ===========================
    START
 =========================== */
 
 loadProducts();
+
+
+/* ===========================
+   RENDER MENU
+=========================== */
+
+function renderMenu(search = ""){
+
+    menuContainer.innerHTML = "";
+
+    let totalProducts = 0;
+
+    const keyword =
+        search
+        .toLowerCase()
+        .trim();
+
+
+    menu.forEach(category => {
+
+
+        /* ===========================
+           FILTER
+        =========================== */
+
+        const filteredProducts =
+            category.products.filter(product => {
+
+                return (
+
+                    product.name
+                        .toLowerCase()
+                        .includes(keyword)
+
+                    ||
+
+                    category.category
+                        .toLowerCase()
+                        .includes(keyword)
+
+                    ||
+
+                    product.weight
+                        .toLowerCase()
+                        .includes(keyword)
+
+                    ||
+
+                    product.price
+                        .toString()
+                        .includes(keyword)
+
+                );
+
+            });
+
+
+        if(
+            filteredProducts.length === 0
+        ){
+
+            return;
+
+        }
+
+
+        /* ===========================
+           GROUP SAME PRODUCT NAME
+        =========================== */
+
+        const grouped = {};
+
+
+        filteredProducts.forEach(product => {
+
+            const key =
+                product.name
+                    .toLowerCase()
+                    .trim();
+
+
+            if(!grouped[key]){
+
+                grouped[key] = [];
+
+            }
+
+
+            grouped[key].push(
+                product
+            );
+
+        });
+
+
+        const productGroups =
+            Object.values(grouped);
+
+
+        totalProducts +=
+            productGroups.length;
+
+
+        /* ===========================
+           CATEGORY
+        =========================== */
+
+        const section =
+            document.createElement("section");
+
+        section.className =
+            "category";
+
+
+        /*
+           IMPORTANT
+
+           Only category explicitly opened
+           by customer will be open.
+        */
+
+        const isOpen =
+            openCategories[
+                category.category
+            ] === true;
+
+
+        let html = `
+
+            <h2
+                class="category-title"
+                onclick="toggleCategory('${escapeHtml(category.category)}')"
+            >
+
+                <span>
+
+                    <span
+                        id="icon-${escapeHtml(category.category)}"
+                    >
+
+                        ${isOpen ? "▼" : "▶"}
+
+                    </span>
+
+                    ${escapeHtml(category.category)}
+
+                </span>
+
+                <span class="category-count">
+
+                    (${productGroups.length})
+
+                </span>
+
+            </h2>
+
+
+            <div
+                id="cat-${escapeHtml(category.category)}"
+                style="
+                    display:${isOpen ? "block" : "none"};
+                "
+            >
+
+        `;
+
+
+        /* ===========================
+           PRODUCT GROUP
+        =========================== */
+
+        productGroups.forEach(products => {
+
+
+            const firstProduct =
+                products[0];
+
+
+            html += `
+
+                <div class="product-row">
+
+                    <div class="product-name">
+
+                        ${escapeHtml(
+                            firstProduct.name
+                        )}
+
+                    </div>
+
+            `;
+
+
+            /* ===========================
+               WEIGHT / PRICE
+            =========================== */
+
+            products.forEach(product => {
+
+                html += `
+
+                    <div
+                        class="product-option"
+
+                        data-product-name="${escapeHtml(
+                            product.name
+                        )}"
+
+                        data-weight="${escapeHtml(
+                            product.weight
+                        )}"
+                    >
+
+                        <div class="product-info">
+
+                            ${escapeHtml(
+                                product.weight
+                            )}
+
+                            &nbsp; • &nbsp;
+
+                            ₹${product.price}
+
+                        </div>
+
+
+                        <div class="qty-box">
+
+                            <button
+                                type="button"
+                                class="qty-btn"
+
+                                onclick="event.stopPropagation(); changeQty(
+                                    '${escapeHtml(category.category)}',
+                                    '${escapeHtml(product.name)}',
+                                    '${escapeHtml(product.weight)}',
+                                    -1
+                                )"
+                            >
+
+                                −
+
+                            </button>
+
+
+                            <span class="qty">
+
+                                ${product.qty}
+
+                            </span>
+
+
+                            <button
+                                type="button"
+                                class="qty-btn"
+
+                                onclick="event.stopPropagation(); changeQty(
+                                    '${escapeHtml(category.category)}',
+                                    '${escapeHtml(product.name)}',
+                                    '${escapeHtml(product.weight)}',
+                                    1
+                                )"
+                            >
+
+                                +
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
+
+
+            html += `
+
+                </div>
+
+            `;
+
+        });
+
+
+        html += `
+
+            </div>
+
+        `;
+
+
+        section.innerHTML =
+            html;
+
+
+        menuContainer.appendChild(
+            section
+        );
+
+    });
+
+
+    /* ===========================
+       PRODUCT COUNT
+    =========================== */
+
+    const countElement =
+        document.getElementById(
+            "productCount"
+        );
+
+
+    if(countElement){
+
+        countElement.innerText =
+            totalProducts;
+
+    }
+
+
+    /* ===========================
+       NO PRODUCTS
+    =========================== */
+
+    if(totalProducts === 0){
+
+        menuContainer.innerHTML = `
+
+            <div class="no-products">
+
+                🔍
+
+                <br><br>
+
+                No Products Found
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* ===========================
+   ESCAPE HTML
+=========================== */
+
+function escapeHtml(value){
+
+    return String(value)
+
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
 /* ===========================
    SEARCH
 =========================== */
 
-searchInput.addEventListener(
+if(searchInput){
 
-"input",
+    searchInput.addEventListener(
+        "input",
+        function(){
 
-function(){
+            renderMenu(
+                this.value
+            );
 
-    renderMenu(this.value);
+        }
+    );
 
-});
+}
 
-/* ===========================
-   CHANGE QUANTITY
-=========================== */
 
 /* ===========================
    CHANGE QUANTITY
@@ -206,11 +646,16 @@ function changeQty(
 
     const category =
         menu.find(
-            c => c.category === categoryName
+            c =>
+                c.category ===
+                categoryName
         );
 
+
     if(!category){
+
         return;
+
     }
 
 
@@ -221,68 +666,56 @@ function changeQty(
                 p.weight === weight
         );
 
+
     if(!product){
+
         return;
+
     }
 
 
-    /* ===========================
-       CHANGE QTY
-    =========================== */
-
     product.qty += change;
 
-if(product.qty < 0){
-    product.qty = 0;
-}
 
-saveCart();
+    if(product.qty < 0){
 
-updateCart();
+        product.qty = 0;
 
-renderMenu(searchInput.value);
+    }
 
 
-    /* ===========================
-       UPDATE ONLY THIS QTY
-       PAGE REFRESH / RERENDER નહીં
-    =========================== */
+    /*
+       Save Cart
+    */
 
-    const rows =
-        document.querySelectorAll(
-            ".product-option"
-        );
+    saveCart();
 
 
-    rows.forEach(row => {
-
-        if(
-            row.dataset.productName === productName &&
-            row.dataset.weight === weight
-        ){
-
-            const qty =
-                row.querySelector(".qty");
-
-            if(qty){
-
-                qty.innerText =
-                    product.qty;
-
-            }
-
-        }
-
-    });
-
-
-    /* ===========================
-       UPDATE CART
-    =========================== */
+    /*
+       Update Cart
+    */
 
     updateCart();
 
+
+    /*
+       IMPORTANT
+
+       Do NOT close category.
+
+       renderMenu() reads
+       openCategories and keeps
+       the category open.
+    */
+
+    renderMenu(
+        searchInput
+        ? searchInput.value
+        : ""
+    );
+
 }
+
 
 /* ===========================
    UPDATE CART
@@ -291,18 +724,22 @@ renderMenu(searchInput.value);
 function updateCart(){
 
     let totalItems = 0;
+
     let totalPrice = 0;
 
-    menu.forEach(category=>{
 
-        category.products.forEach(product=>{
+    menu.forEach(category => {
+
+        category.products.forEach(product => {
 
             if(product.qty > 0){
 
-                totalItems += product.qty;
+                totalItems +=
+                    product.qty;
 
                 totalPrice +=
-                product.qty * product.price;
+                    product.qty *
+                    product.price;
 
             }
 
@@ -310,55 +747,106 @@ function updateCart(){
 
     });
 
-    cartItems.innerText = totalItems;
 
-    cartTotal.innerText =
-    "₹" + totalPrice;
+    if(cartItems){
 
-    if(totalItems > 0){
+        cartItems.innerText =
+            totalItems;
 
-        cartBar.style.display = "flex";
+    }
 
-    }else{
 
-        cartBar.style.display = "none";
+    if(cartTotal){
+
+        cartTotal.innerText =
+            "₹" + totalPrice;
+
+    }
+
+
+    if(cartBar){
+
+        cartBar.style.display =
+            totalItems > 0
+            ? "flex"
+            : "none";
 
     }
 
 }
+
 
 /* ===========================
    CATEGORY COLLAPSE
 =========================== */
+
 function toggleCategory(category){
 
     const box =
-        document.getElementById("cat-" + category);
+        document.getElementById(
+            "cat-" + category
+        );
 
     const icon =
-        document.getElementById("icon-" + category);
+        document.getElementById(
+            "icon-" + category
+        );
 
-    if(!box) return;
 
-    if(box.style.display === "none"){
+    if(!box){
 
-        box.style.display = "block";
+        return;
 
-        icon.innerHTML = "▼";
+    }
 
-        openCategories[category] = true;
+
+    if(
+        box.style.display === "none"
+    ){
+
+        /*
+           OPEN
+        */
+
+        box.style.display =
+            "block";
+
+        if(icon){
+
+            icon.innerHTML =
+                "▼";
+
+        }
+
+        openCategories[
+            category
+        ] = true;
+
 
     }else{
 
-        box.style.display = "none";
+        /*
+           CLOSE
+        */
 
-        icon.innerHTML = "▶";
+        box.style.display =
+            "none";
 
-        openCategories[category] = false;
+        if(icon){
+
+            icon.innerHTML =
+                "▶";
+
+        }
+
+        openCategories[
+            category
+        ] = false;
 
     }
 
 }
+
 
 /* ===========================
    REVIEW
@@ -388,107 +876,152 @@ ${review}
 }
 
 
-
 /* ===========================
    WHATSAPP ORDER
 =========================== */
 
-document
-.getElementById("orderBtn")
-.addEventListener("click",function(){
+const orderBtn =
+    document.getElementById(
+        "orderBtn"
+    );
 
-    let total = 0;
 
-    let message =
-"🛒 *Jyoti Gruh Udhyog*\n\n";
+if(orderBtn){
 
-    menu.forEach(category=>{
+    orderBtn.addEventListener(
+        "click",
+        function(){
 
-        let found = false;
+            let total = 0;
 
-        category.products.forEach(product=>{
 
-            if(product.qty>0){
+            let message =
+                "🛒 *Jyoti Gruh Udhyog*\n\n";
 
-                if(!found){
 
-                    message +=
-"\n📦 *" +
-category.category +
-"*\n";
+            menu.forEach(category => {
 
-                    found = true;
+                let found = false;
 
-                }
 
-                const amount =
-                product.qty *
-                product.price;
+                category.products.forEach(product => {
 
-                total += amount;
+                    if(product.qty > 0){
 
-                message +=
-"• " +
-product.name +
-"\n" +
-product.weight +
-" × " +
-product.qty +
-" = ₹" +
-amount +
-"\n";
+                        if(!found){
+
+                            message +=
+                                "\n📦 *" +
+                                category.category +
+                                "*\n";
+
+                            found = true;
+
+                        }
+
+
+                        const amount =
+                            product.qty *
+                            product.price;
+
+
+                        total +=
+                            amount;
+
+
+                        message +=
+                            "• " +
+                            product.name +
+                            "\n" +
+
+                            product.weight +
+                            " × " +
+                            product.qty +
+                            " = ₹" +
+                            amount +
+                            "\n";
+
+                    }
+
+                });
+
+            });
+
+
+            if(total === 0){
+
+                alert(
+                    "Please add product."
+                );
+
+                return;
 
             }
 
-        });
 
-    });
-
-    if(total===0){
-
-        alert(
-"Please add product."
-);
-
-        return;
-
-    }
-
-    message +=
-"\n━━━━━━━━━━━━━━\n";
-
-    message +=
-"💰 Total : ₹" +
-total;
-
-    window.open(
-
-"https://wa.me/919712149344?text="+
-encodeURIComponent(message),
-
-"_blank"
-
-);
-
-/* CLEAR CART */
-
-menu.forEach(category=>{
-
-    category.products.forEach(product=>{
-
-        product.qty = 0;
-
-    });
-
-});
+            message +=
+                "\n━━━━━━━━━━━━━━\n";
 
 
-localStorage.removeItem("jyotiCart");
-updateCart();
+            message +=
+                "💰 Total : ₹" +
+                total;
 
-renderMenu();
 
-});
+            /*
+               Open WhatsApp
+            */
+
+            window.open(
+
+                "https://wa.me/919712149344?text=" +
+
+                encodeURIComponent(
+                    message
+                ),
+
+                "_blank"
+
+            );
+
+
+            /*
+               CLEAR CART
+            */
+
+            menu.forEach(category => {
+
+                category.products.forEach(product => {
+
+                    product.qty = 0;
+
+                });
+
+            });
+
+
+            localStorage.removeItem(
+                "jyotiCart"
+            );
+
+
+            updateCart();
+
+
+            /*
+               After order:
+               all categories closed
+            */
+
+            openCategories = {};
+
+
+            renderMenu();
+
+        }
+    );
+
+}
 
 
 /* ===========================
@@ -499,6 +1032,7 @@ function saveCart(){
 
     const cart = [];
 
+
     menu.forEach(category => {
 
         category.products.forEach(product => {
@@ -507,13 +1041,17 @@ function saveCart(){
 
                 cart.push({
 
-                    category: category.category,
+                    category:
+                        category.category,
 
-                    name: product.name,
+                    name:
+                        product.name,
 
-                    weight: product.weight,
+                    weight:
+                        product.weight,
 
-                    qty: product.qty
+                    qty:
+                        product.qty
 
                 });
 
@@ -523,9 +1061,13 @@ function saveCart(){
 
     });
 
+
     localStorage.setItem(
+
         "jyotiCart",
+
         JSON.stringify(cart)
+
     );
 
 }
@@ -538,35 +1080,79 @@ function saveCart(){
 function restoreCart(){
 
     const savedCart =
-        localStorage.getItem("jyotiCart");
+        localStorage.getItem(
+            "jyotiCart"
+        );
 
-    if(!savedCart) return;
 
-    const cart =
-        JSON.parse(savedCart);
+    if(!savedCart){
 
-    cart.forEach(saved => {
+        return;
 
-        const category =
-            menu.find(
-                c => c.category === saved.category
+    }
+
+
+    try{
+
+        const cart =
+            JSON.parse(
+                savedCart
             );
 
-        if(!category) return;
 
-        const product =
-            category.products.find(
-                p =>
-                    p.name === saved.name &&
-                    p.weight === saved.weight
-            );
+        if(!Array.isArray(cart)){
 
-        if(product){
-
-            product.qty = saved.qty;
+            return;
 
         }
 
-    });
+
+        cart.forEach(saved => {
+
+            const category =
+                menu.find(
+                    c =>
+                        c.category ===
+                        saved.category
+                );
+
+
+            if(!category){
+
+                return;
+
+            }
+
+
+            const product =
+                category.products.find(
+                    p =>
+                        p.name ===
+                            saved.name &&
+
+                        p.weight ===
+                            saved.weight
+                );
+
+
+            if(product){
+
+                product.qty =
+                    Number(saved.qty) || 0;
+
+            }
+
+        });
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Cart Restore Error:",
+            error
+        );
+
+    }
 
 }

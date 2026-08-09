@@ -73,31 +73,29 @@ async function loadProducts(){
 
     catch(error){
 
-        console.error(
-            "Products Loading Error:",
-            error
-        );
+    console.error("JYOTI ERROR:", error);
 
-        loader.style.display = "none";
+    loader.style.display = "none";
 
-        menuContainer.innerHTML = `
+    menuContainer.innerHTML = `
 
-            <div class="no-products">
+        <div class="no-products">
 
-                ⚠️
+            ⚠️<br><br>
 
-                <br><br>
+            Products Loading Failed
 
-                Products Loading Failed
+            <br><br>
 
-            </div>
+            <small>
+                ${error.message}
+            </small>
 
-        `;
+        </div>
 
-    }
+    `;
 
 }
-
 
 /* ===========================
    BUILD MENU

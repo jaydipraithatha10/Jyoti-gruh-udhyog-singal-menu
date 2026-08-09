@@ -32,6 +32,7 @@ body{
     box-shadow:0 8px 20px rgba(0,0,0,.14);
 }
 
+
 .header h1{
     margin-top:12px;
     font-size:28px;
@@ -101,6 +102,11 @@ body{
     transform:translateY(-2px);
 }
 
+
+.call-btn,
+.whatsapp-btn{
+    margin:0 !important;
+}
 /* ===========================
    SEARCH
 =========================== */

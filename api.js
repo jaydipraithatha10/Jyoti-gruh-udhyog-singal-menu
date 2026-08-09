@@ -271,40 +271,36 @@ function renderMenu(search = ""){
 
         section.className = "category";
 
+        let isOpen = openCategories[category.category] === true;
 
-        let html = `
+let html = `
 
-        <h2
-            class="category-title"
-            onclick="toggleCategory('${category.category}')"
-        >
+<h2
+class="category-title"
+onclick="toggleCategory('${category.category}')">
 
-            <span>
-               
-                <span
-id="icon-${category.category}">
-${openCategories[category.category] === false ? "▶" : "▼"}
-</span>
+    <span>
 
-                ${category.category}
+        <span id="icon-${category.category}">
+            ${isOpen ? "▼" : "▶"}
+        </span>
 
-            </span>
+        ${category.category}
 
-            <span class="category-count">
+    </span>
 
-                ${productGroups.length}
+    <span class="category-count">
+        ${products.length}
+    </span>
 
-            </span>
+</h2>
 
-        </h2>
-         
-        <div
+<div
 id="cat-${category.category}"
-style="display:${openCategories[category.category] === false ? "none" : "block"}">
+style="display:${isOpen ? "block" : "none"}">
 
+`;
         
-        `;
-
 
         /* ===========================
            PRODUCT GROUP
